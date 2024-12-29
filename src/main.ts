@@ -14,6 +14,8 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		console.log("sample plugin onload");
+
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
