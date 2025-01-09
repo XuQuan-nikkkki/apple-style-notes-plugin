@@ -28,7 +28,10 @@ export default class AppleStyleNotesPlugin extends Plugin {
 				callback: async () => await this.openFileTreeLeaf(true),
 		});
 
-	}
+		this.app.workspace.onLayoutReady(async () => {
+				await this.openFileTreeLeaf(true);
+		});
+	} 
 
 	onunload() {
 
