@@ -13,11 +13,11 @@ export class FileTreeView extends ItemView {
 	}
 
 	getViewType(): string {
-		return this.plugin.VIEW_TYPE;
+		return this.plugin?.VIEW_TYPE;
 	}
 
 	getDisplayText(): string {
-		return this.plugin.VIEW_DISPLAY_TEXT;
+		return this.plugin?.VIEW_DISPLAY_TEXT;
 	}
 
 	destroy() {
