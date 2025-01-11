@@ -2,6 +2,7 @@ import { Root, createRoot } from "react-dom/client";
 import { ItemView, WorkspaceLeaf } from "obsidian";
 
 import AppleStyleNotesPlugin from "./main";
+import FileTree from "./components/FileTree";
 
 export class FileTreeView extends ItemView {
 	root: Root;
@@ -32,6 +33,10 @@ export class FileTreeView extends ItemView {
 	constructFileTree(folderPath: string, vaultChange: string) {
 		this.destroy();
 		this.root = createRoot(this.contentEl);
-		this.root.render(<div className="file-tree-plugin-view">File tree view</div>);
+		this.root.render(
+			<div className="asn-plugin-view">
+				<FileTree plugin={this.plugin} />
+			</div>
+		);
 	}
 }

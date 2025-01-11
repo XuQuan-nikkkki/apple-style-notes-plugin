@@ -6,3 +6,44 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.theme-light,
+.theme-dark {
+	--asn-folder-pane-min-width: 140px;
+	--asn-files-pane-min-width: 200px;
+}
+
+.theme-light {
+  --asn-pane-divider-color: #d3d4d6;
+}
+
+.theme-dark {
+  --asn-pane-divider-color: #000000;
+}
+
+.asn-plugin-view {
+	height: 100%;
+	min-width: calc(
+		var(--asn-folder-pane-min-width) + var(--asn-files-pane-min-width)
+	);
+}
+
+.asn-plugin-container {
+	display: flex;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.asn-folder-pane {
+	min-width: var(--asn-folder-pane-min-width);
+  flex:1;
+}
+
+.asn-files-pane {
+	min-width: var(--asn-files-pane-min-width);
+  flex:1;
+}
+
+.asn-pane-divider {
+  border: 1px solid var(--asn-pane-divider-color);
+}
