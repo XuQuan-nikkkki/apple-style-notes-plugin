@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useShallow } from 'zustand/react/shallow'
+import { useShallow } from "zustand/react/shallow";
 
 import AppleStyleNotesPlugin from "src/main";
 import { createFileTreeStore, FileTreeStore } from "src/store";
@@ -13,21 +13,28 @@ const FileTree = ({ plugin }: Props) => {
 		() => createFileTreeStore(plugin),
 		[plugin]
 	);
-  const { folders, getFilesCountInFolder } = useFileTreeStore(
-    useShallow((state:FileTreeStore) => ({
-			folders: state.folders,
+	const {
+		getFilesCountInFolder,
+		hasFolderChildren,
+		getTopLevelFolders,
+	} = useFileTreeStore(
+		useShallow((state: FileTreeStore) => ({
 			getFilesCountInFolder: state.getFilesCountInFolder,
-		})),
-  )
+			hasFolderChildren: state.hasFolderChildren,
+			getTopLevelFolders: state.getTopLevelFolders,
+		}))
+	);
 
+  const topLevelFolders = getTopLevelFolders()
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane">
-				{folders.map((folder) => (
+				{topLevelFolders.map((folder) => (
 					<Folder
 						key={folder.name}
 						folder={folder}
 						filesCount={getFilesCountInFolder(folder)}
+						hasFolderChildren={hasFolderChildren(folder)}
 					/>
 				))}
 			</div>
