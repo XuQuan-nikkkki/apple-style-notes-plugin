@@ -14,11 +14,15 @@ If your plugin does not need CSS, delete this file.
 }
 
 .theme-light {
-  --asn-pane-divider-color: #d3d4d6;
+	--asn-pane-divider-color: #d3d4d6;
+	--asn-folder-hover-background-color: #e5e5e5;
+	--asn-files-count-color: #a6a6a7;
 }
 
 .theme-dark {
-  --asn-pane-divider-color: #000000;
+	--asn-pane-divider-color: #000000;
+	--asn-folder-hover-background-color: #2e2d2c;
+	--asn-files-count-color: #89898a;
 }
 
 .asn-plugin-view {
@@ -36,14 +40,43 @@ If your plugin does not need CSS, delete this file.
 
 .asn-folder-pane {
 	min-width: var(--asn-folder-pane-min-width);
-  flex:1;
+	flex: 1;
 }
 
 .asn-files-pane {
 	min-width: var(--asn-files-pane-min-width);
-  flex:1;
+	flex: 1;
 }
 
 .asn-pane-divider {
-  border: 1px solid var(--asn-pane-divider-color);
+	border: 1px solid var(--asn-pane-divider-color);
+}
+
+.asn-folder {
+	height: 32px;
+	font-size: 13px;
+	padding-left: 6px;
+	padding-right: 12px;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.asn-folder:hover {
+	background-color: var(--asn-folder-hover-background-color);
+}
+
+.asn-icon {
+	width: 14px;
+	height: 12px;
+	fill: #d19600;
+}
+
+.asn-folder-icon {
+	margin-right: 8px;
+}
+
+.asn-files-count {
+	color: var(--asn-files-count-color);
 }
