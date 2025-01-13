@@ -11,8 +11,7 @@ If your plugin does not need CSS, delete this file.
 .theme-dark {
 	--asn-folder-pane-min-width: 140px;
 	--asn-files-pane-min-width: 200px;
-
-	--asn-folder-toggle-icon-size: 10px;
+	--asn-folder-border-radius: 4px;
 }
 
 .theme-light {
@@ -20,6 +19,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-folder-hover-background-color: #e5e5e5;
 	--asn-files-count-color: #a6a6a7;
 	--asn-folder-toggle-icon-color: #585a5d;
+	--asn-folder-focused-color: #fdf8eb;
+	--asn-focused-folder-background-color: #ecc44c;
 }
 
 .theme-dark {
@@ -27,6 +28,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-folder-hover-background-color: #2e2d2c;
 	--asn-files-count-color: #89898a;
 	--asn-folder-toggle-icon-color: #bfc2c2;
+	--asn-folder-focused-color: #ffffff;
+	--asn-focused-folder-background-color: #debe5b;
 }
 
 .asn-plugin-view {
@@ -45,6 +48,7 @@ If your plugin does not need CSS, delete this file.
 .asn-folder-pane {
 	min-width: var(--asn-folder-pane-min-width);
 	flex: 1;
+	margin-right: 8px;
 }
 
 .asn-files-pane {
@@ -57,17 +61,20 @@ If your plugin does not need CSS, delete this file.
 }
 
 .asn-folder {
-	height: 32px;
+	height: 30px;
 	font-size: 13px;
 	padding-right: 12px;
 
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 .asn-folder:hover {
 	background-color: var(--asn-folder-hover-background-color);
+	border-radius: var(--asn-folder-border-radius);
 }
 
 .asn-folder-pane-left-sectionn {
@@ -75,29 +82,44 @@ If your plugin does not need CSS, delete this file.
 	align-items: center;
 }
 
-.asn-folder-toggle-icon-section {
-	width: var(--asn-folder-toggle-icon-size);
+.asn-folder-arrow-icon-wrapper {
+	width: 10px;
 	display: flex;
 	align-items: center;
-}
-
-.asn-icon {
-	width: 14px;
-	height: 12px;
-	fill: #d19600;
+	margin-right: 4px;
 }
 
 .asn-folder-icon {
+	width: 14px;
+	height: 12px;
+	fill: #d19600;
 	margin-right: 8px;
+}
+
+.asn-arrow-down-icon,
+.asn-arrow-right-icon {
+	width: 8px;
+	height: 8px;
+	fill: #5a5d63;
 }
 
 .asn-files-count {
 	color: var(--asn-files-count-color);
+	font-size: 12px;
 }
 
-.asn-toggle-icon {
-	width: var(--asn-folder-toggle-icon-size);
-	height: var(--asn-folder-toggle-icon-size);
-	margin-right: 4px;
-	fill: var(--asn-folder-toggle-icon-color);
+.asn-folder-pane .asn-focused-folder {
+	background-color: var(--asn-focused-folder-background-color);
+	border-radius: var(--asn-folder-border-radius);
+}
+
+.asn-focused-folder,
+.asn-focused-folder .asn-files-count {
+	color: var(--asn-folder-focused-color);
+	font-weight: 450;
+}
+
+.asn-focused-folder .asn-arrow-down-icon,
+.asn-focused-folder .asn-folder-icon {
+	fill: var(--asn-folder-focused-color);
 }
