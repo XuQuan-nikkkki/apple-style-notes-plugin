@@ -5,7 +5,11 @@ import AppleStyleNotesPlugin from "src/main";
 import { createFileTreeStore, FileTreeStore } from "src/store";
 import Folder from "./Folder";
 import { TFolder } from "obsidian";
-import { ASN_FOCUSED_FOLDER_NAME } from "src/assets/constants";
+import {
+	ASN_EXPANDED_FOLDER_NAMES_KEY,
+	ASN_FOCUSED_FOLDER_NAME_KEY,
+} from "src/assets/constants";
+import File from "./File";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -16,6 +20,7 @@ const FileTree = ({ plugin }: Props) => {
 		[plugin]
 	);
 	const {
+		focusedFile,
 		getFilesCountInFolder,
 		hasFolderChildren,
 		getTopLevelFolders,
@@ -23,6 +28,8 @@ const FileTree = ({ plugin }: Props) => {
 		setFocusedFolder,
 		findFolderByName,
 		getFoldersByParent,
+		getDirectFilesInFolder,
+		setFocusedFile,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			getFilesCountInFolder: state.getFilesCountInFolder,
@@ -32,14 +39,22 @@ const FileTree = ({ plugin }: Props) => {
 			setFocusedFolder: state.setFocusedFolder,
 			findFolderByName: state.findFolderByName,
 			getFoldersByParent: state.getFoldersByParent,
+			getDirectFilesInFolder: state.getDirectFilesInFolder,
+			focusedFile: state.focusedFile,
+			setFocusedFile: state.setFocusedFile,
 		}))
 	);
 
-	const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
+	const [expandedFolderNames, setExpandedFolderNames] = useState<string[]>(
+		[]
+	);
 
 	useEffect(() => {
 		const lastFocusedFolderName = localStorage.getItem(
-			ASN_FOCUSED_FOLDER_NAME
+			ASN_FOCUSED_FOLDER_NAME_KEY
+		);
+		const lastExpandedFolderNames = localStorage.getItem(
+			ASN_EXPANDED_FOLDER_NAMES_KEY
 		);
 		if (lastFocusedFolderName) {
 			const folder = findFolderByName(lastFocusedFolderName);
@@ -47,16 +62,27 @@ const FileTree = ({ plugin }: Props) => {
 				onSetFocusedFolder(folder);
 			}
 		}
+		if (lastExpandedFolderNames) {
+			try {
+				const folderNames = JSON.parse(lastExpandedFolderNames);
+				setExpandedFolderNames(folderNames);
+			} catch (error) {
+				console.error("Invalid Json format: ", error);
+			}
+		}
 	}, []);
 
 	const onSetFocusedFolder = (folder: TFolder): void => {
 		setFocusedFolder(folder);
-		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME, folder.name);
+		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME_KEY, folder.name);
 		if (hasFolderChildren(folder)) {
-			setExpandedFolders((prev) =>
-				prev.includes(folder.name)
-					? prev.filter((name) => name !== folder.name)
-					: [...prev, folder.name]
+			const folderNames = expandedFolderNames.includes(folder.name)
+				? expandedFolderNames.filter((name) => name !== folder.name)
+				: [...expandedFolderNames, folder.name];
+			setExpandedFolderNames(folderNames);
+			localStorage.setItem(
+				ASN_EXPANDED_FOLDER_NAMES_KEY,
+				JSON.stringify(folderNames)
 			);
 		}
 	};
@@ -71,12 +97,12 @@ const FileTree = ({ plugin }: Props) => {
 					filesCount={getFilesCountInFolder(folder)}
 					hasFolderChildren={hasFolderChildren(folder)}
 					isFocused={folder.name === focusedFolder?.name}
-					isExpanded={expandedFolders.includes(folder.name)}
+					isExpanded={expandedFolderNames.includes(folder.name)}
 					onSelectFolder={() => {
 						onSetFocusedFolder(folder);
 					}}
 				/>
-				{expandedFolders.includes(folder.name) &&
+				{expandedFolderNames.includes(folder.name) &&
 					hasFolderChildren(folder) && (
 						<div className="asn-sub-folders-section">
 							{renderFolders(getFoldersByParent(folder))}
@@ -86,13 +112,37 @@ const FileTree = ({ plugin }: Props) => {
 		));
 	};
 
+	const renderNoneFilesTips = () => {
+		return <div className="asn-none-files-tips">无文件</div>;
+	};
+
+	const renderFiles = () => {
+		if (!focusedFolder) return renderNoneFilesTips();
+
+		const files = getDirectFilesInFolder(focusedFolder);
+		if (!files.length) return renderNoneFilesTips();
+
+		return (
+			<>
+				{files.map((file) => (
+					<File
+						key={file.name}
+						file={file}
+						isFocused={focusedFile?.name === file.name}
+						onSelectFile={() => setFocusedFile(file)}
+					/>
+				))}
+			</>
+		);
+	};
+
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane">
 				{renderFolders(topLevelFolders)}
 			</div>
 			<div className="asn-pane-divider" />
-			<div className="asn-files-pane">files pane</div>
+			<div className="asn-files-pane">{renderFiles()}</div>
 		</div>
 	);
 };
