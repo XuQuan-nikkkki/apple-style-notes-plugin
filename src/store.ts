@@ -9,6 +9,7 @@ export type FileTreeStore = {
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
 	findFolderByName: (name: string) => TFolder | undefined;
+	findFileByPath: (path: string) => TFile | null;
 	getTopLevelFolders: () => TFolder[];
 	getFilesCountInFolder: (folder: TFolder) => number;
 	getFoldersByParent: (parentFolder: TFolder) => TFolder[];
@@ -16,6 +17,7 @@ export type FileTreeStore = {
 	hasFolderChildren: (folder: TFolder) => boolean;
 	setFocusedFolder: (folder: TFolder) => void;
 	setFocusedFile: (file: TFile) => void;
+	openFile: (file: TFile) => void;
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -55,6 +57,9 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		getDirectFilesInFolder: (folder: TFolder): TFile[] => {
 			return folder.children.filter((child) => isFile(child));
 		},
+		findFileByPath: (path: string): TFile | null => {
+			return plugin.app.vault.getFileByPath(path)
+		},
 		setFocusedFolder: (folder: TFolder) =>
 			set({
 				focusedFolder: folder,
@@ -63,4 +68,12 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			set({
 				focusedFile: file,
 			}),
+		openFile: (file: TFile): void => {
+			const abstractFile = plugin.app.vault.getAbstractFileByPath(
+				file.path
+			);
+			const leaf = plugin.app.workspace.getLeaf();
+			plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
+			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
+		},
 	}));

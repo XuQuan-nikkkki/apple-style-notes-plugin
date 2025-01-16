@@ -4,9 +4,10 @@ import { useShallow } from "zustand/react/shallow";
 import AppleStyleNotesPlugin from "src/main";
 import { createFileTreeStore, FileTreeStore } from "src/store";
 import Folder from "./Folder";
-import { TFolder } from "obsidian";
+import { TFile, TFolder } from "obsidian";
 import {
 	ASN_EXPANDED_FOLDER_NAMES_KEY,
+	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_NAME_KEY,
 } from "src/assets/constants";
 import File from "./File";
@@ -27,9 +28,11 @@ const FileTree = ({ plugin }: Props) => {
 		focusedFolder,
 		setFocusedFolder,
 		findFolderByName,
+		findFileByPath,
 		getFoldersByParent,
 		getDirectFilesInFolder,
 		setFocusedFile,
+		openFile,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			getFilesCountInFolder: state.getFilesCountInFolder,
@@ -38,10 +41,12 @@ const FileTree = ({ plugin }: Props) => {
 			focusedFolder: state.focusedFolder,
 			setFocusedFolder: state.setFocusedFolder,
 			findFolderByName: state.findFolderByName,
+			findFileByPath: state.findFileByPath,
 			getFoldersByParent: state.getFoldersByParent,
 			getDirectFilesInFolder: state.getDirectFilesInFolder,
 			focusedFile: state.focusedFile,
 			setFocusedFile: state.setFocusedFile,
+			openFile: state.openFile,
 		}))
 	);
 
@@ -56,10 +61,19 @@ const FileTree = ({ plugin }: Props) => {
 		const lastExpandedFolderNames = localStorage.getItem(
 			ASN_EXPANDED_FOLDER_NAMES_KEY
 		);
+		const lastFocusedFilePath = localStorage.getItem(
+			ASN_FOCUSED_FILE_PATH_KEY
+		);
 		if (lastFocusedFolderName) {
 			const folder = findFolderByName(lastFocusedFolderName);
 			if (folder) {
-				onSetFocusedFolder(folder);
+				onSelectFolder(folder);
+			}
+		}
+		if (lastFocusedFilePath) {
+			const file = findFileByPath(lastFocusedFilePath);
+			if (file) {
+				onSelectFile(file);
 			}
 		}
 		if (lastExpandedFolderNames) {
@@ -72,7 +86,7 @@ const FileTree = ({ plugin }: Props) => {
 		}
 	}, []);
 
-	const onSetFocusedFolder = (folder: TFolder): void => {
+	const onSelectFolder = (folder: TFolder): void => {
 		setFocusedFolder(folder);
 		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME_KEY, folder.name);
 		if (hasFolderChildren(folder)) {
@@ -99,7 +113,7 @@ const FileTree = ({ plugin }: Props) => {
 					isFocused={folder.name === focusedFolder?.name}
 					isExpanded={expandedFolderNames.includes(folder.name)}
 					onSelectFolder={() => {
-						onSetFocusedFolder(folder);
+						onSelectFolder(folder);
 					}}
 				/>
 				{expandedFolderNames.includes(folder.name) &&
@@ -116,6 +130,12 @@ const FileTree = ({ plugin }: Props) => {
 		return <div className="asn-none-files-tips">无文件</div>;
 	};
 
+	const onSelectFile = (file: TFile): void => {
+		setFocusedFile(file);
+		openFile(file);
+		localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path)
+	};
+
 	const renderFiles = () => {
 		if (!focusedFolder) return renderNoneFilesTips();
 
@@ -129,7 +149,7 @@ const FileTree = ({ plugin }: Props) => {
 						key={file.name}
 						file={file}
 						isFocused={focusedFile?.name === file.name}
-						onSelectFile={() => setFocusedFile(file)}
+						onSelectFile={() => onSelectFile(file)}
 					/>
 				))}
 			</>
