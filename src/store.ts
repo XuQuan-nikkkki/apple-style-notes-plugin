@@ -10,6 +10,7 @@ export type FileTreeStore = {
 	findFolderByName: (name: string) => TFolder | undefined;
 	getTopLevelFolders: () => TFolder[];
 	getFilesCountInFolder: (folder: TFolder) => number;
+	getFoldersByParent: (parentFolder: TFolder) => TFolder[];
 	hasFolderChildren: (folder: TFolder) => boolean;
 	setFocusedFolder: (folder: TFolder) => void;
 };
@@ -43,6 +44,9 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				}, 0);
 			};
 			return getFilesCount(folder);
+		},
+		getFoldersByParent: (parentFolder: TFolder): TFolder[] => {
+			return parentFolder.children.filter((child) => isFolder(child));
 		},
 		setFocusedFolder: (folder: TFolder) =>
 			set({

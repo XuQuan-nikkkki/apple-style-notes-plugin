@@ -8,6 +8,7 @@ type Props = {
 	filesCount: number;
 	hasFolderChildren: boolean;
 	isFocused: boolean;
+	isExpanded: boolean
 	onSelectFolder: () => void;
 };
 const Folder = ({
@@ -15,6 +16,7 @@ const Folder = ({
 	filesCount,
 	hasFolderChildren,
 	isFocused,
+	isExpanded,
 	onSelectFolder,
 }: Props) => {
 	const folderClassName = `asn-folder ${
@@ -25,7 +27,7 @@ const Folder = ({
 			<div className="asn-folder-pane-left-sectionn">
 				<span className="asn-folder-arrow-icon-wrapper ">
 					{hasFolderChildren &&
-						(isFocused ? <ArrowDownIcon /> : <ArrowRightIcon />)}
+						(isExpanded ? <ArrowDownIcon /> : <ArrowRightIcon />)}
 				</span>
 				<FolderIcon />
 				<div className="asn-folder-name">{folder.name}</div>

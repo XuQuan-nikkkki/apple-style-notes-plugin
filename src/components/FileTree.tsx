@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import AppleStyleNotesPlugin from "src/main";
@@ -22,6 +22,7 @@ const FileTree = ({ plugin }: Props) => {
 		focusedFolder,
 		setFocusedFolder,
 		findFolderByName,
+		getFoldersByParent,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			getFilesCountInFolder: state.getFilesCountInFolder,
@@ -30,8 +31,11 @@ const FileTree = ({ plugin }: Props) => {
 			focusedFolder: state.focusedFolder,
 			setFocusedFolder: state.setFocusedFolder,
 			findFolderByName: state.findFolderByName,
+			getFoldersByParent: state.getFoldersByParent,
 		}))
 	);
+
+	const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
 
 	useEffect(() => {
 		const lastFocusedFolderName = localStorage.getItem(
@@ -48,22 +52,44 @@ const FileTree = ({ plugin }: Props) => {
 	const onSetFocusedFolder = (folder: TFolder): void => {
 		setFocusedFolder(folder);
 		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME, folder.name);
+		if (hasFolderChildren(folder)) {
+			setExpandedFolders((prev) =>
+				prev.includes(folder.name)
+					? prev.filter((name) => name !== folder.name)
+					: [...prev, folder.name]
+			);
+		}
 	};
 
 	const topLevelFolders = getTopLevelFolders();
+
+	const renderFolders = (folders: TFolder[]) => {
+		return folders.map((folder) => (
+			<div key={folder.name}>
+				<Folder
+					folder={folder}
+					filesCount={getFilesCountInFolder(folder)}
+					hasFolderChildren={hasFolderChildren(folder)}
+					isFocused={folder.name === focusedFolder?.name}
+					isExpanded={expandedFolders.includes(folder.name)}
+					onSelectFolder={() => {
+						onSetFocusedFolder(folder);
+					}}
+				/>
+				{expandedFolders.includes(folder.name) &&
+					hasFolderChildren(folder) && (
+						<div className="asn-sub-folders-section">
+							{renderFolders(getFoldersByParent(folder))}
+						</div>
+					)}
+			</div>
+		));
+	};
+
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane">
-				{topLevelFolders.map((folder) => (
-					<Folder
-						key={folder.name}
-						folder={folder}
-						filesCount={getFilesCountInFolder(folder)}
-						hasFolderChildren={hasFolderChildren(folder)}
-						isFocused={folder.name == focusedFolder?.name}
-						onSelectFolder={() => onSetFocusedFolder(folder)}
-					/>
-				))}
+				{renderFolders(topLevelFolders)}
 			</div>
 			<div className="asn-pane-divider" />
 			<div className="asn-files-pane">files pane</div>

@@ -132,3 +132,7 @@ If your plugin does not need CSS, delete this file.
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.asn-sub-folders-section {
+	margin-left: 6px;
+}
