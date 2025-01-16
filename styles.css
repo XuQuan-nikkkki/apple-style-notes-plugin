@@ -80,6 +80,8 @@ If your plugin does not need CSS, delete this file.
 .asn-folder-pane-left-sectionn {
 	display: flex;
 	align-items: center;
+	flex: 1;
+	overflow: hidden;
 }
 
 .asn-folder-arrow-icon-wrapper {
@@ -122,4 +124,11 @@ If your plugin does not need CSS, delete this file.
 .asn-focused-folder .asn-arrow-down-icon,
 .asn-focused-folder .asn-folder-icon {
 	fill: var(--asn-folder-focused-color);
+}
+
+.asn-folder-name {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

@@ -28,7 +28,7 @@ const Folder = ({
 						(isFocused ? <ArrowDownIcon /> : <ArrowRightIcon />)}
 				</span>
 				<FolderIcon />
-				{folder.name}
+				<div className="asn-folder-name">{folder.name}</div>
 			</div>
 			<span className="asn-files-count">{filesCount}</span>
 		</div>
