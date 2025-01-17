@@ -8,8 +8,9 @@ type Props = {
 	filesCount: number;
 	hasFolderChildren: boolean;
 	isFocused: boolean;
-	isExpanded: boolean
+	isExpanded: boolean;
 	onSelectFolder: () => void;
+	onToggleExpandState: () => void;
 };
 const Folder = ({
 	folder,
@@ -18,6 +19,7 @@ const Folder = ({
 	isFocused,
 	isExpanded,
 	onSelectFolder,
+	onToggleExpandState,
 }: Props) => {
 	const folderClassName = `asn-folder ${
 		isFocused ? "asn-focused-folder" : ""
@@ -25,7 +27,13 @@ const Folder = ({
 	return (
 		<div className={folderClassName} onClick={onSelectFolder}>
 			<div className="asn-folder-pane-left-sectionn">
-				<span className="asn-folder-arrow-icon-wrapper ">
+				<span
+					className="asn-folder-arrow-icon-wrapper"
+					onClick={(e) => {
+						e.stopPropagation()
+						onToggleExpandState();
+					}}
+				>
 					{hasFolderChildren &&
 						(isExpanded ? <ArrowDownIcon /> : <ArrowRightIcon />)}
 				</span>

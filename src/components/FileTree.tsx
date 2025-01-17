@@ -89,6 +89,9 @@ const FileTree = ({ plugin }: Props) => {
 	const onSelectFolder = (folder: TFolder): void => {
 		setFocusedFolder(folder);
 		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME_KEY, folder.name);
+	};
+
+	const onToggleExpandState = (folder: TFolder): void => {
 		if (hasFolderChildren(folder)) {
 			const folderNames = expandedFolderNames.includes(folder.name)
 				? expandedFolderNames.filter((name) => name !== folder.name)
@@ -115,6 +118,7 @@ const FileTree = ({ plugin }: Props) => {
 					onSelectFolder={() => {
 						onSelectFolder(folder);
 					}}
+					onToggleExpandState={() => onToggleExpandState(folder)}
 				/>
 				{expandedFolderNames.includes(folder.name) &&
 					hasFolderChildren(folder) && (
@@ -133,7 +137,7 @@ const FileTree = ({ plugin }: Props) => {
 	const onSelectFile = (file: TFile): void => {
 		setFocusedFile(file);
 		openFile(file);
-		localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path)
+		localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
 	};
 
 	const renderFiles = () => {
