@@ -13,6 +13,7 @@ import {
 } from "src/assets/constants";
 import File from "./File";
 import DraggableDivider from "./DraggableDivider";
+import EmptyFolderIcon from "src/assets/icons/EmptyFolderIcon";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -152,7 +153,11 @@ const FileTree = ({ plugin }: Props) => {
 	};
 
 	const renderNoneFilesTips = () => {
-		return <div className="asn-none-files-tips">无文件</div>;
+		return (
+			<div className="asn-none-files-tips">
+				<EmptyFolderIcon />
+			</div>
+		);
 	};
 
 	const onSelectFile = (file: TFile): void => {

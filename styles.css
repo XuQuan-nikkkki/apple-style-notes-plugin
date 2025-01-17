@@ -144,8 +144,12 @@ If your plugin does not need CSS, delete this file.
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 20px;
-	color: #bdbdbd;
+}
+
+.asn-none-files-tips .asn-empty-folder-icon {
+	width: 60px;
+	height: 60px;
+	fill: #bdbdbd;
 }
 
 .asn-file {
