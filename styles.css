@@ -108,6 +108,7 @@ If your plugin does not need CSS, delete this file.
 .asn-files-count {
 	color: var(--asn-files-count-color);
 	font-size: 12px;
+	margin-left: 4px;
 }
 
 .asn-folder-pane .asn-focused-folder {
