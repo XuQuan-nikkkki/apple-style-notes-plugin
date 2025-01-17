@@ -47,7 +47,6 @@ If your plugin does not need CSS, delete this file.
 
 .asn-folder-pane {
 	min-width: var(--asn-folder-pane-min-width);
-	flex: 1;
 	margin-right: 8px;
 }
 
@@ -58,6 +57,7 @@ If your plugin does not need CSS, delete this file.
 
 .asn-pane-divider {
 	border: 1px solid var(--asn-pane-divider-color);
+	cursor: ew-resize;
 }
 
 .asn-folder {
@@ -159,11 +159,11 @@ If your plugin does not need CSS, delete this file.
 }
 
 .asn-file:not(:last-child) {
-	border-bottom: 1px solid #E6E6E6;
+	border-bottom: 1px solid #e6e6e6;
 }
 
 .asn-file:hover {
-	background-color: #DCDCDC;
+	background-color: #dcdcdc;
 }
 
 .asn-file .asn-file-name {
@@ -179,5 +179,5 @@ If your plugin does not need CSS, delete this file.
 }
 
 .asn-files-pane .asn-focused-file {
-	background-color: var(--asn-focused-folder-background-color)
+	background-color: var(--asn-focused-folder-background-color);
 }

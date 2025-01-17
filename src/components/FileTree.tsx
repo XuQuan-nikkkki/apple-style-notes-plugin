@@ -9,8 +9,10 @@ import {
 	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_NAME_KEY,
+	ASN_FOLDER_PANE_WIDTH_KEY,
 } from "src/assets/constants";
 import File from "./File";
+import DraggableDivider from "./DraggableDivider";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -53,6 +55,9 @@ const FileTree = ({ plugin }: Props) => {
 	const [expandedFolderNames, setExpandedFolderNames] = useState<string[]>(
 		[]
 	);
+	const [folderPaneWidth, setFolderPaneWidth] = useState<number | undefined>(
+		220
+	);
 
 	useEffect(() => {
 		const lastFocusedFolderName = localStorage.getItem(
@@ -63,6 +68,9 @@ const FileTree = ({ plugin }: Props) => {
 		);
 		const lastFocusedFilePath = localStorage.getItem(
 			ASN_FOCUSED_FILE_PATH_KEY
+		);
+		const lastFolderPaneWidth = localStorage.getItem(
+			ASN_FOLDER_PANE_WIDTH_KEY
 		);
 		if (lastFocusedFolderName) {
 			const folder = findFolderByName(lastFocusedFolderName);
@@ -84,6 +92,14 @@ const FileTree = ({ plugin }: Props) => {
 				console.error("Invalid Json format: ", error);
 			}
 		}
+		if (lastFolderPaneWidth) {
+			try {
+				const width = Number(lastFolderPaneWidth);
+				onChangeFolderPaneWidth(width);
+			} catch (error) {
+				console.error("Invalid Number format: ", error);
+			}
+		}
 	}, []);
 
 	const onSelectFolder = (folder: TFolder): void => {
@@ -102,6 +118,11 @@ const FileTree = ({ plugin }: Props) => {
 				JSON.stringify(folderNames)
 			);
 		}
+	};
+
+	const onChangeFolderPaneWidth = (width: number) => {
+		setFolderPaneWidth(width);
+		localStorage.setItem(ASN_FOLDER_PANE_WIDTH_KEY, String(width));
 	};
 
 	const topLevelFolders = getTopLevelFolders();
@@ -162,10 +183,13 @@ const FileTree = ({ plugin }: Props) => {
 
 	return (
 		<div className="asn-plugin-container">
-			<div className="asn-folder-pane">
+			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
 				{renderFolders(topLevelFolders)}
 			</div>
-			<div className="asn-pane-divider" />
+			<DraggableDivider
+				initialWidth={folderPaneWidth}
+				onChangeWidth={onChangeFolderPaneWidth}
+			/>
 			<div className="asn-files-pane">{renderFiles()}</div>
 		</div>
 	);
