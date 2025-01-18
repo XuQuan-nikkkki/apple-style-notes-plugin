@@ -42,6 +42,7 @@ const FileTree = ({ plugin }: Props) => {
 		setFocusedFile,
 		openFile,
 		createFolder,
+		readFile,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			folders: state.folders,
@@ -59,6 +60,7 @@ const FileTree = ({ plugin }: Props) => {
 			setFocusedFile: state.setFocusedFile,
 			openFile: state.openFile,
 			createFolder: state.createFolder,
+			readFile: state.readFile,
 		}))
 	);
 
@@ -218,6 +220,7 @@ const FileTree = ({ plugin }: Props) => {
 						file={file}
 						isFocused={focusedFile?.name === file.name}
 						onSelectFile={() => onSelectFile(file)}
+						onReadFile={readFile}
 					/>
 				))}
 			</>

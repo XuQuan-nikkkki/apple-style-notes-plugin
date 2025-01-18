@@ -20,6 +20,7 @@ export type FileTreeStore = {
 	setFocusedFile: (file: TFile) => void;
 	openFile: (file: TFile) => void;
 	createFolder: (path: string) => Promise<TFolder>;
+	readFile: (file: TFile) => Promise<string>;
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -79,7 +80,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
 			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
 		},
-		createFolder: async(path: string): Promise<TFolder> => {
+		createFolder: async (path: string): Promise<TFolder> => {
 			return await plugin.app.vault.createFolder(path);
+		},
+		readFile: async (file: TFile): Promise<string> => {
+			return await plugin.app.vault.read(file)
 		},
 	}));
