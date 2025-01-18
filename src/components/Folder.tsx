@@ -1,6 +1,4 @@
-import { ArrowDownIcon } from "src/assets/icons/ArrowDownIcon";
-import { ArrowRightIcon } from "src/assets/icons/ArrowRightIcon";
-import { FolderIcon } from "src/assets/icons/FolderIcon";
+import { ArrowDownIcon, ArrowRightIcon, FolderIcon } from "src/assets/icons";
 
 type Props = {
 	folderName: string;

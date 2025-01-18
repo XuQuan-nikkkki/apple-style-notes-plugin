@@ -1,4 +1,4 @@
-export const ArrowDownIcon = () => (
+const ArrowDownIcon = () => (
 	<svg
 		viewBox="0 0 84.8212890625 52.0029296875"
 		version="1.1"
@@ -12,3 +12,5 @@ export const ArrowDownIcon = () => (
 		</g>
 	</svg>
 );
+
+export default ArrowDownIcon

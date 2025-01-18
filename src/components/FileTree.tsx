@@ -13,7 +13,7 @@ import {
 } from "src/assets/constants";
 import File from "./File";
 import DraggableDivider from "./DraggableDivider";
-import EmptyFolderIcon from "src/assets/icons/EmptyFolderIcon";
+import { EmptyFolderIcon } from "src/assets/icons";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
