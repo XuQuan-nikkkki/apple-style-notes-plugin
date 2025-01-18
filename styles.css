@@ -67,7 +67,6 @@ If your plugin does not need CSS, delete this file.
 .asn-folder {
 	height: 30px;
 	font-size: 13px;
-	padding-right: 12px;
 
 	display: flex;
 	align-items: center;
