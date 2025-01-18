@@ -7,8 +7,8 @@ import { AppleStyleNotesPluginSettings, DEFAULT_SETTINGS } from "./settings";
 export default class AppleStyleNotesPlugin extends Plugin {
 	settings: AppleStyleNotesPluginSettings;
 
-	VIEW_TYPE = 'file-tree-view';
-	VIEW_DISPLAY_TEXT = 'File Tree';
+	VIEW_TYPE = 'asn-plugin-file-tree-view';
+	VIEW_DISPLAY_TEXT = 'Apple Style Notes Plugin File Tree';
 
 	async onload() {
 		console.log("Apple Styled Notes Plugin onload");
