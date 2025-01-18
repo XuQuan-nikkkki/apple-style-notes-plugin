@@ -6,9 +6,9 @@ type Props = {
 	hasFolderChildren: boolean;
 	isFocused: boolean;
 	isExpanded: boolean;
-	isRoot: boolean;
 	onSelectFolder: () => void;
-	onToggleExpandState: () => void;
+	onToggleExpandState?: () => void;
+	isRoot?: boolean;
 };
 const Folder = ({
 	folderName,
@@ -16,9 +16,9 @@ const Folder = ({
 	hasFolderChildren,
 	isFocused,
 	isExpanded,
-	isRoot,
 	onSelectFolder,
 	onToggleExpandState,
+	isRoot = false,
 }: Props) => {
 	const folderClassNames = ["asn-folder"];
 	if (isFocused) {
@@ -34,7 +34,7 @@ const Folder = ({
 					className="asn-folder-arrow-icon-wrapper"
 					onClick={(e) => {
 						e.stopPropagation();
-						onToggleExpandState();
+						onToggleExpandState?.();
 					}}
 				>
 					{hasFolderChildren &&

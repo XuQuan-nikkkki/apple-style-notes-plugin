@@ -28,6 +28,7 @@ const FileTree = ({ plugin }: Props) => {
 	);
 	const {
 		rootFolder,
+		getTopLevelFolders,
 		focusedFile,
 		getFilesCountInFolder,
 		hasFolderChildren,
@@ -139,11 +140,7 @@ const FileTree = ({ plugin }: Props) => {
 		return folders.map((folder) => (
 			<div key={folder.name}>
 				<Folder
-					folderName={
-						folder.isRoot()
-							? plugin.app.vault.getName()
-							: folder.name
-					}
+					folderName={folder.name}
 					filesCount={getFilesCountInFolder(folder)}
 					hasFolderChildren={hasFolderChildren(folder)}
 					isFocused={folder.path === focusedFolder?.path}
@@ -152,7 +149,6 @@ const FileTree = ({ plugin }: Props) => {
 						onSelectFolder(folder);
 					}}
 					onToggleExpandState={() => onToggleExpandState(folder)}
-					isRoot={folder.isRoot()}
 				/>
 				{expandedFolderNames.includes(folder.name) &&
 					hasFolderChildren(folder) && (
@@ -162,6 +158,26 @@ const FileTree = ({ plugin }: Props) => {
 					)}
 			</div>
 		));
+	};
+
+	const renderRootFolder = () => {
+		if (!rootFolder) return null;
+
+		return (
+			<div>
+				<Folder
+					folderName={plugin.app.vault.getName()}
+					filesCount={getFilesCountInFolder(rootFolder)}
+					hasFolderChildren={hasFolderChildren(rootFolder)}
+					isFocused={rootFolder.path === focusedFolder?.path}
+					isExpanded
+					isRoot
+					onSelectFolder={() => {
+						onSelectFolder(rootFolder);
+					}}
+				/>
+			</div>
+		);
 	};
 
 	const renderNoneFilesTips = () => {
@@ -212,12 +228,15 @@ const FileTree = ({ plugin }: Props) => {
 		);
 	};
 
-	const topLevelFolders = rootFolder ? [rootFolder] : [];
+	const topLevelFolders = getTopLevelFolders();
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
 				<FolderActions onCreateFolder={onCreateFolder} />
-				{renderFolders(topLevelFolders)}
+				{renderRootFolder()}
+				<div className="asn-sub-folders-section">
+					{renderFolders(topLevelFolders)}
+				</div>
 			</div>
 			<DraggableDivider
 				initialWidth={folderPaneWidth}
