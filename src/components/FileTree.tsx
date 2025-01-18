@@ -14,6 +14,8 @@ import {
 import File from "./File";
 import DraggableDivider from "./DraggableDivider";
 import { EmptyFolderIcon } from "src/assets/icons";
+import FolderActions from "./FolderActions";
+import FileActions from "./FileActions";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -36,6 +38,7 @@ const FileTree = ({ plugin }: Props) => {
 		getDirectFilesInFolder,
 		setFocusedFile,
 		openFile,
+		createFolder,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			rootFolder: state.rootFolder,
@@ -51,6 +54,7 @@ const FileTree = ({ plugin }: Props) => {
 			focusedFile: state.focusedFile,
 			setFocusedFile: state.setFocusedFile,
 			openFile: state.openFile,
+			createFolder: state.createFolder,
 		}))
 	);
 
@@ -192,17 +196,28 @@ const FileTree = ({ plugin }: Props) => {
 		);
 	};
 
+	const onCreateFolder = async () => {
+		if (!rootFolder) return;
+		const path = focusedFolder ? focusedFolder.path : rootFolder?.path;
+		const newFolder = await createFolder(path);
+		onSelectFolder(newFolder);
+	};
+
 	const topLevelFolders = rootFolder ? [rootFolder] : [];
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
+				<FolderActions onCreateFolder={onCreateFolder} />
 				{renderFolders(topLevelFolders)}
 			</div>
 			<DraggableDivider
 				initialWidth={folderPaneWidth}
 				onChangeWidth={onChangeFolderPaneWidth}
 			/>
-			<div className="asn-files-pane">{renderFiles()}</div>
+			<div className="asn-files-pane">
+				<FileActions />
+				{renderFiles()}
+			</div>
 		</div>
 	);
 };

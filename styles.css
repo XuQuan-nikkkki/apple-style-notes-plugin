@@ -21,6 +21,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-folder-toggle-icon-color: #585a5d;
 	--asn-folder-focused-color: #fdf8eb;
 	--asn-focused-folder-background-color: #ecc44c;
+	--asn-actions-background-color: #e5e5e5;
+	--asn-actions-icon-color: #898989;
 }
 
 .theme-dark {
@@ -30,6 +32,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-folder-toggle-icon-color: #bfc2c2;
 	--asn-folder-focused-color: #ffffff;
 	--asn-focused-folder-background-color: #debe5b;
+	--asn-actions-background-color: #2e2d2c;
+	--asn-actions-icon-color: #a59982;
 }
 
 .asn-plugin-view {
@@ -194,4 +198,26 @@ If your plugin does not need CSS, delete this file.
 
 .asn-files-pane .asn-focused-file {
 	background-color: var(--asn-focused-folder-background-color);
+}
+
+.asn-actions {
+	margin: 0px auto 4px;
+	padding: 8px 16px 4px;
+	border-radius: var(--asn-folder-border-radius);
+	background-color: var(--asn-actions-background-color);
+	display: flex;
+}
+
+.asn-file-actions {
+	margin-left: 12px;
+}
+
+.asn-folder-actions-icon {
+	width: 18px;
+	height: 18px;
+	stroke: var(--asn-actions-icon-color);
+}
+
+.asn-actions-icon-wrapper:not(:last-child) {
+	margin-right: 12px;
 }
