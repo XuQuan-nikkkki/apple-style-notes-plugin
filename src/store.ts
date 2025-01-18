@@ -80,6 +80,6 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
 		},
 		createFolder: async(path: string): Promise<TFolder> => {
-			return await plugin.app.vault.createFolder(path + "/" + "Untitled");
+			return await plugin.app.vault.createFolder(path);
 		},
 	}));

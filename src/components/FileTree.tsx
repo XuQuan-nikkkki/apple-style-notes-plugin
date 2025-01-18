@@ -16,6 +16,7 @@ import DraggableDivider from "./DraggableDivider";
 import { EmptyFolderIcon } from "src/assets/icons";
 import FolderActions from "./FolderActions";
 import FileActions from "./FileActions";
+import { isFolder } from "src/utils";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -81,7 +82,6 @@ const FileTree = ({ plugin }: Props) => {
 
 		if (lastFocusedFolderPath && lastFocusedFolderPath !== "/") {
 			const folder = findFolderByPath(lastFocusedFolderPath);
-			console.log(folder)
 			if (folder) {
 				onSelectFolder(folder);
 			}
@@ -200,9 +200,16 @@ const FileTree = ({ plugin }: Props) => {
 
 	const onCreateFolder = async () => {
 		if (!rootFolder) return;
-		const path = focusedFolder ? focusedFolder.path : rootFolder?.path;
-		const newFolder = await createFolder(path);
-		onSelectFolder(newFolder);
+		const parentFolder = focusedFolder ? focusedFolder : rootFolder;
+		const newFolderName = "Untitled";
+		const untitledFoldersCount = parentFolder.children.filter(
+			(child) => isFolder(child) && child.name.contains(newFolderName)
+		).length;
+		const newFolderNameSuffix =
+			untitledFoldersCount == 0 ? "" : untitledFoldersCount;
+		await createFolder(
+			parentFolder.path + "/" + newFolderName + " " + newFolderNameSuffix
+		);
 	};
 
 	const topLevelFolders = rootFolder ? [rootFolder] : [];
