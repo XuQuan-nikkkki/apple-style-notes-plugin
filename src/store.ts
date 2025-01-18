@@ -9,7 +9,7 @@ export type FileTreeStore = {
 	rootFolder: TFolder | null;
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
-	findFolderByName: (name: string) => TFolder | undefined;
+	findFolderByPath: (name: string) => TFolder | undefined;
 	findFileByPath: (path: string) => TFile | null;
 	getTopLevelFolders: () => TFolder[];
 	getFilesCountInFolder: (folder: TFolder) => number;
@@ -29,8 +29,8 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		focusedFolder: null,
 		focusedFile: null,
 
-		findFolderByName: (name: string): TFolder | undefined => {
-			return get().folders.find((folder) => folder.name == name);
+		findFolderByPath: (path: string): TFolder | undefined => {
+			return get().folders.find((folder) => folder.path == path);
 		},
 		getTopLevelFolders: () => {
 			const folders = get().folders;

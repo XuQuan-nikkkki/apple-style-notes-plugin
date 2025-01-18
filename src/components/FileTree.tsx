@@ -8,7 +8,7 @@ import { TFile, TFolder } from "obsidian";
 import {
 	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
-	ASN_FOCUSED_FOLDER_NAME_KEY,
+	ASN_FOCUSED_FOLDER_PATH_KEY,
 	ASN_FOLDER_PANE_WIDTH_KEY,
 } from "src/assets/constants";
 import File from "./File";
@@ -32,7 +32,7 @@ const FileTree = ({ plugin }: Props) => {
 		hasFolderChildren,
 		focusedFolder,
 		setFocusedFolder,
-		findFolderByName,
+		findFolderByPath,
 		findFileByPath,
 		getFoldersByParent,
 		getDirectFilesInFolder,
@@ -47,7 +47,7 @@ const FileTree = ({ plugin }: Props) => {
 			getTopLevelFolders: state.getTopLevelFolders,
 			focusedFolder: state.focusedFolder,
 			setFocusedFolder: state.setFocusedFolder,
-			findFolderByName: state.findFolderByName,
+			findFolderByPath: state.findFolderByPath,
 			findFileByPath: state.findFileByPath,
 			getFoldersByParent: state.getFoldersByParent,
 			getDirectFilesInFolder: state.getDirectFilesInFolder,
@@ -66,8 +66,8 @@ const FileTree = ({ plugin }: Props) => {
 	);
 
 	useEffect(() => {
-		const lastFocusedFolderName = localStorage.getItem(
-			ASN_FOCUSED_FOLDER_NAME_KEY
+		const lastFocusedFolderPath = localStorage.getItem(
+			ASN_FOCUSED_FOLDER_PATH_KEY
 		);
 		const lastExpandedFolderNames = localStorage.getItem(
 			ASN_EXPANDED_FOLDER_NAMES_KEY
@@ -78,8 +78,10 @@ const FileTree = ({ plugin }: Props) => {
 		const lastFolderPaneWidth = localStorage.getItem(
 			ASN_FOLDER_PANE_WIDTH_KEY
 		);
-		if (lastFocusedFolderName) {
-			const folder = findFolderByName(lastFocusedFolderName);
+
+		if (lastFocusedFolderPath && lastFocusedFolderPath !== "/") {
+			const folder = findFolderByPath(lastFocusedFolderPath);
+			console.log(folder)
 			if (folder) {
 				onSelectFolder(folder);
 			}
@@ -112,7 +114,7 @@ const FileTree = ({ plugin }: Props) => {
 
 	const onSelectFolder = (folder: TFolder): void => {
 		setFocusedFolder(folder);
-		localStorage.setItem(ASN_FOCUSED_FOLDER_NAME_KEY, folder.name);
+		localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
 	};
 
 	const onToggleExpandState = (folder: TFolder): void => {
@@ -144,7 +146,7 @@ const FileTree = ({ plugin }: Props) => {
 					}
 					filesCount={getFilesCountInFolder(folder)}
 					hasFolderChildren={hasFolderChildren(folder)}
-					isFocused={folder.name === focusedFolder?.name}
+					isFocused={folder.path === focusedFolder?.path}
 					isExpanded={expandedFolderNames.includes(folder.name)}
 					onSelectFolder={() => {
 						onSelectFolder(folder);
