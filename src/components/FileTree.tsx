@@ -28,7 +28,6 @@ const FileTree = ({ plugin }: Props) => {
 		focusedFile,
 		getFilesCountInFolder,
 		hasFolderChildren,
-		getTopLevelFolders,
 		focusedFolder,
 		setFocusedFolder,
 		findFolderByName,
