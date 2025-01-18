@@ -80,6 +80,8 @@ const FileTree = ({ plugin }: Props) => {
 			if (folder) {
 				onSelectFolder(folder);
 			}
+		} else if (rootFolder) {
+			onSelectFolder(rootFolder);
 		}
 		if (lastFocusedFilePath) {
 			const file = findFileByPath(lastFocusedFilePath);
