@@ -218,6 +218,10 @@ If your plugin does not need CSS, delete this file.
 	stroke: var(--asn-actions-icon-color);
 }
 
+.asn-folder-actions-icon:hover {
+	transform: scale(1.1);
+}
+
 .asn-actions-icon-wrapper:not(:last-child) {
 	margin-right: 12px;
 }
