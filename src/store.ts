@@ -6,6 +6,7 @@ import { isFile, isFolder } from "./utils";
 
 export type FileTreeStore = {
 	folders: TFolder[];
+	rootFolder: TFolder | null;
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
 	findFolderByName: (name: string) => TFolder | undefined;
@@ -23,6 +24,7 @@ export type FileTreeStore = {
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 	create((set, get: () => FileTreeStore) => ({
 		folders: plugin.app.vault.getAllFolders() || [],
+		rootFolder: plugin.app.vault.getRoot() || null,
 		focusedFolder: null,
 		focusedFile: null,
 
@@ -58,7 +60,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			return folder.children.filter((child) => isFile(child));
 		},
 		findFileByPath: (path: string): TFile | null => {
-			return plugin.app.vault.getFileByPath(path)
+			return plugin.app.vault.getFileByPath(path);
 		},
 		setFocusedFolder: (folder: TFolder) =>
 			set({

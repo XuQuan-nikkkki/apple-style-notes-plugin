@@ -77,6 +77,10 @@ If your plugin does not need CSS, delete this file.
 	border-radius: var(--asn-folder-border-radius);
 }
 
+.asn-root-folder {
+	font-size: 14px;
+}
+
 .asn-folder-pane-left-sectionn {
 	display: flex;
 	align-items: center;
@@ -96,6 +100,11 @@ If your plugin does not need CSS, delete this file.
 	height: 12px;
 	fill: #d19600;
 	margin-right: 8px;
+}
+
+.asn-root-folder .asn-root-folder-icon {
+	width: 16px;
+	height: 14px;
 }
 
 .asn-arrow-down-icon,

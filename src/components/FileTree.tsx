@@ -24,6 +24,7 @@ const FileTree = ({ plugin }: Props) => {
 		[plugin]
 	);
 	const {
+		rootFolder,
 		focusedFile,
 		getFilesCountInFolder,
 		hasFolderChildren,
@@ -38,6 +39,7 @@ const FileTree = ({ plugin }: Props) => {
 		openFile,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
+			rootFolder: state.rootFolder,
 			getFilesCountInFolder: state.getFilesCountInFolder,
 			hasFolderChildren: state.hasFolderChildren,
 			getTopLevelFolders: state.getTopLevelFolders,
@@ -126,13 +128,15 @@ const FileTree = ({ plugin }: Props) => {
 		localStorage.setItem(ASN_FOLDER_PANE_WIDTH_KEY, String(width));
 	};
 
-	const topLevelFolders = getTopLevelFolders();
-
 	const renderFolders = (folders: TFolder[]) => {
 		return folders.map((folder) => (
 			<div key={folder.name}>
 				<Folder
-					folder={folder}
+					folderName={
+						folder.isRoot()
+							? plugin.app.vault.getName()
+							: folder.name
+					}
 					filesCount={getFilesCountInFolder(folder)}
 					hasFolderChildren={hasFolderChildren(folder)}
 					isFocused={folder.name === focusedFolder?.name}
@@ -141,6 +145,7 @@ const FileTree = ({ plugin }: Props) => {
 						onSelectFolder(folder);
 					}}
 					onToggleExpandState={() => onToggleExpandState(folder)}
+					isRoot={folder.isRoot()}
 				/>
 				{expandedFolderNames.includes(folder.name) &&
 					hasFolderChildren(folder) && (
@@ -186,6 +191,7 @@ const FileTree = ({ plugin }: Props) => {
 		);
 	};
 
+	const topLevelFolders = rootFolder ? [rootFolder] : [];
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
