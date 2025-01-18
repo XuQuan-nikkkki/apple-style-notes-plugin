@@ -35,7 +35,7 @@ export default class AppleStyleNotesPlugin extends Plugin {
 		});
 
 		this.app.vault.on("create", (file) => {
-			this.refreshTreeLeafs(false);
+			this.refreshTreeLeafs(true);
 		});
 
 		this.app.vault.on("modify", (file) => {

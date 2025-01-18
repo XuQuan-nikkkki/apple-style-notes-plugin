@@ -27,6 +27,7 @@ const FileTree = ({ plugin }: Props) => {
 		[plugin]
 	);
 	const {
+		folders,
 		rootFolder,
 		getTopLevelFolders,
 		focusedFile,
@@ -43,6 +44,7 @@ const FileTree = ({ plugin }: Props) => {
 		createFolder,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
+			folders: state.folders,
 			rootFolder: state.rootFolder,
 			getFilesCountInFolder: state.getFilesCountInFolder,
 			hasFolderChildren: state.hasFolderChildren,
@@ -129,6 +131,14 @@ const FileTree = ({ plugin }: Props) => {
 				JSON.stringify(folderNames)
 			);
 		}
+	};
+
+	const onToggleFoldersExpandState = (folderNames: string[]): void => {
+		setExpandedFolderNames(folderNames);
+		localStorage.setItem(
+			ASN_EXPANDED_FOLDER_NAMES_KEY,
+			JSON.stringify(folderNames)
+		);
 	};
 
 	const onChangeFolderPaneWidth = (width: number) => {
@@ -232,11 +242,15 @@ const FileTree = ({ plugin }: Props) => {
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
-				<FolderActions onCreateFolder={onCreateFolder} />
+				<FolderActions
+					onCreateFolder={onCreateFolder}
+					onExpandAllFolders={() =>
+						onToggleFoldersExpandState(folders.map((f) => f.name))
+					}
+					onCollapseAllFolders={() => onToggleFoldersExpandState([])}
+				/>
 				{renderRootFolder()}
-				<div className="asn-sub-folders-section">
-					{renderFolders(topLevelFolders)}
-				</div>
+				{renderFolders(topLevelFolders)}
 			</div>
 			<DraggableDivider
 				initialWidth={folderPaneWidth}
