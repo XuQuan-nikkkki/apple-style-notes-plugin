@@ -21,6 +21,10 @@ export class FileTreeView extends ItemView {
 		return this.plugin?.VIEW_DISPLAY_TEXT;
 	}
 
+	getIcon(): string {
+		return this.plugin?.ICON
+	}
+
 	destroy() {
 		this.root?.unmount();
 	}

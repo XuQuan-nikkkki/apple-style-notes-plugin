@@ -9,6 +9,7 @@ export default class AppleStyleNotesPlugin extends Plugin {
 
 	VIEW_TYPE = 'asn-plugin-file-tree-view';
 	VIEW_DISPLAY_TEXT = 'Apple Style Notes Plugin File Tree';
+	ICON = 'dock';
 
 	async onload() {
 		console.log("Apple Styled Notes Plugin onload");
