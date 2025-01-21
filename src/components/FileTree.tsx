@@ -5,14 +5,12 @@ import AppleStyleNotesPlugin from "src/main";
 import { createFileTreeStore, FileTreeStore } from "src/store";
 import { TFolder } from "obsidian";
 import {
-	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
 	ASN_FOLDER_PANE_WIDTH_KEY,
 } from "src/assets/constants";
 import DraggableDivider from "./DraggableDivider";
 import FolderActions from "./FolderActions";
 import FileActions from "./FileActions";
-import { isFolder } from "src/utils";
 import Files from "./Files";
 import Folders from "./Folders";
 
@@ -24,26 +22,10 @@ const FileTree = ({ plugin }: Props) => {
 		() => createFileTreeStore(plugin),
 		[plugin]
 	);
-	const {
-		folders,
-		rootFolder,
-		folderSortRule,
-		focusedFolder,
-		setFocusedFolder,
-		findFolderByPath,
-		createFolder,
-		changeExpandedFolderNames,
-	} = useFileTreeStore(
+	const { setFocusedFolder, findFolderByPath } = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
-			folders: store.folders,
-			rootFolder: store.rootFolder,
-			folderSortRule: store.folderSortRule,
-			focusedFolder: store.focusedFolder,
 			setFocusedFolder: store.setFocusedFolder,
 			findFolderByPath: store.findFolderByPath,
-			createFolder: store.createFolder,
-			expandedFolderNames: store.expandedFolderNames,
-			changeExpandedFolderNames: store.changeExpandedFolderNames,
 		}))
 	);
 
@@ -71,44 +53,15 @@ const FileTree = ({ plugin }: Props) => {
 		localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
 	};
 
-	const onToggleFoldersExpandState = (folderNames: string[]): void => {
-		changeExpandedFolderNames(folderNames);
-		localStorage.setItem(
-			ASN_EXPANDED_FOLDER_NAMES_KEY,
-			JSON.stringify(folderNames)
-		);
-	};
-
 	const onChangeFolderPaneWidth = (width: number) => {
 		setFolderPaneWidth(width);
 		localStorage.setItem(ASN_FOLDER_PANE_WIDTH_KEY, String(width));
 	};
 
-	const onCreateFolder = async () => {
-		if (!rootFolder) return;
-		const parentFolder = focusedFolder ? focusedFolder : rootFolder;
-		const newFolderName = "Untitled";
-		const untitledFoldersCount = parentFolder.children.filter(
-			(child) => isFolder(child) && child.name.contains(newFolderName)
-		).length;
-		const newFolderNameSuffix =
-			untitledFoldersCount == 0 ? "" : untitledFoldersCount;
-		await createFolder(
-			parentFolder.path + "/" + newFolderName + " " + newFolderNameSuffix
-		);
-	};
-
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
-				<FolderActions
-					onCreateFolder={onCreateFolder}
-					onExpandAllFolders={() =>
-						onToggleFoldersExpandState(folders.map((f) => f.name))
-					}
-					onCollapseAllFolders={() => onToggleFoldersExpandState([])}
-					sortRule={folderSortRule}
-				/>
+				<FolderActions useFileTreeStore={useFileTreeStore} />
 				<Folders plugin={plugin} useFileTreeStore={useFileTreeStore} />
 			</div>
 			<DraggableDivider
