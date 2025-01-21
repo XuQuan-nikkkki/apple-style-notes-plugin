@@ -17,6 +17,7 @@ export type FileTreeStore = {
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
 	folderSortRule: FolderSortRule;
+	expandedFolderNames: string[];
 	findFolderByPath: (name: string) => TFolder | undefined;
 	findFileByPath: (path: string) => TFile | null;
 	getTopLevelFolders: () => TFolder[];
@@ -30,6 +31,7 @@ export type FileTreeStore = {
 	createFolder: (path: string) => Promise<TFolder>;
 	readFile: (file: TFile) => Promise<string>;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
+	changeExpandedFolderNames: (folderNames: string[]) => void;
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -39,6 +41,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		focusedFolder: null,
 		focusedFile: null,
 		folderSortRule: DEFAULT_FOLDER_SORT_RULE,
+		expandedFolderNames: [],
 
 		findFolderByPath: (path: string): TFolder | undefined => {
 			return get().folders.find((folder) => folder.path == path);
@@ -115,5 +118,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				);
 			}
 			return folders; // 如果没有匹配的规则，返回原始文件夹
+		},
+		changeExpandedFolderNames: (folderNames: string[]) => {
+			set({
+				expandedFolderNames: folderNames,
+			});
 		},
 	}));

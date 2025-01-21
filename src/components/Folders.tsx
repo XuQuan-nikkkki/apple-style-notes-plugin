@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi, UseBoundStore } from "zustand";
 
@@ -27,6 +27,8 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		findFolderByPath,
 		getFoldersByParent,
 		sortFolders,
+		expandedFolderNames,
+		changeExpandedFolderNames,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			rootFolder: store.rootFolder,
@@ -39,11 +41,9 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			findFolderByPath: store.findFolderByPath,
 			getFoldersByParent: store.getFoldersByParent,
 			sortFolders: store.sortFolders,
+			expandedFolderNames: store.expandedFolderNames,
+			changeExpandedFolderNames: store.changeExpandedFolderNames,
 		}))
-	);
-
-	const [expandedFolderNames, setExpandedFolderNames] = useState<string[]>(
-		[]
 	);
 
 	useEffect(() => {
@@ -65,7 +65,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		if (lastExpandedFolderNames) {
 			try {
 				const folderNames = JSON.parse(lastExpandedFolderNames);
-				setExpandedFolderNames(folderNames);
+				changeExpandedFolderNames(folderNames);
 			} catch (error) {
 				console.error("Invalid Json format: ", error);
 			}
@@ -82,7 +82,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			const folderNames = expandedFolderNames.includes(folder.name)
 				? expandedFolderNames.filter((name) => name !== folder.name)
 				: [...expandedFolderNames, folder.name];
-			setExpandedFolderNames(folderNames);
+			changeExpandedFolderNames(folderNames);
 			localStorage.setItem(
 				ASN_EXPANDED_FOLDER_NAMES_KEY,
 				JSON.stringify(folderNames)

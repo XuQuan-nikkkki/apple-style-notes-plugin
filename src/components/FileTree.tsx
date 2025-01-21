@@ -32,6 +32,7 @@ const FileTree = ({ plugin }: Props) => {
 		setFocusedFolder,
 		findFolderByPath,
 		createFolder,
+		changeExpandedFolderNames,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			folders: store.folders,
@@ -41,12 +42,11 @@ const FileTree = ({ plugin }: Props) => {
 			setFocusedFolder: store.setFocusedFolder,
 			findFolderByPath: store.findFolderByPath,
 			createFolder: store.createFolder,
+			expandedFolderNames: store.expandedFolderNames,
+			changeExpandedFolderNames: store.changeExpandedFolderNames,
 		}))
 	);
 
-	const [expandedFolderNames, setExpandedFolderNames] = useState<string[]>(
-		[]
-	);
 	const [folderPaneWidth, setFolderPaneWidth] = useState<number | undefined>(
 		220
 	);
@@ -72,7 +72,7 @@ const FileTree = ({ plugin }: Props) => {
 	};
 
 	const onToggleFoldersExpandState = (folderNames: string[]): void => {
-		setExpandedFolderNames(folderNames);
+		changeExpandedFolderNames(folderNames);
 		localStorage.setItem(
 			ASN_EXPANDED_FOLDER_NAMES_KEY,
 			JSON.stringify(folderNames)
