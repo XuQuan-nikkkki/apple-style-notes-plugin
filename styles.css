@@ -96,10 +96,11 @@ If your plugin does not need CSS, delete this file.
 }
 
 .asn-folder-arrow-icon-wrapper {
-	width: 10px;
+	width: 14px;
 	display: flex;
 	align-items: center;
-	margin-right: 4px;
+	margin-right: 2px;
+	padding: 2px;	
 }
 
 .asn-folder-icon {
