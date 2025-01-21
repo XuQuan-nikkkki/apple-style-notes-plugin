@@ -1,4 +1,4 @@
-import { TFolder } from "obsidian";
+import { Menu, TFolder } from "obsidian";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
@@ -25,6 +25,8 @@ const Folder = ({
 		setFocusedFolder,
 		expandedFolderPaths,
 		changeExpandedFolderPaths,
+		createNewFolder,
+		createFile,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			getFilesCountInFolder: store.getFilesCountInFolder,
@@ -33,17 +35,58 @@ const Folder = ({
 			setFocusedFolder: store.setFocusedFolderAndSaveInLocalStorage,
 			expandedFolderPaths: store.expandedFolderPaths,
 			changeExpandedFolderPaths: store.changeExpandedFolderPaths,
+			createNewFolder: store.createNewFolder,
+			createFile: store.createFile,
 		}))
 	);
+
+	const isFolderExpanded = expandedFolderPaths.includes(folder.path);
 
 	const onToggleExpandState = (): void => {
 		if (isRoot) return;
 		if (hasFolderChildren(folder)) {
-			const folderPaths = expandedFolderPaths.includes(folder.path)
+			const folderPaths = isFolderExpanded
 				? expandedFolderPaths.filter((path) => path !== folder.path)
 				: [...expandedFolderPaths, folder.path];
-				changeExpandedFolderPaths(folderPaths);
+			changeExpandedFolderPaths(folderPaths);
 		}
+	};
+
+	const onShowContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const menu = new Menu();
+		menu.addItem((item) => {
+			item.setTitle("New note");
+			item.onClick(() => {
+				createFile(folder);
+			});
+		});
+		menu.addItem((item) => {
+			item.setTitle("New folder");
+			item.onClick(() => {
+				createNewFolder(folder);
+				if (!isFolderExpanded) {
+					onToggleExpandState();
+				}
+			});
+		});
+		menu.addSeparator();
+		menu.addItem((item) => {
+			item.setTitle("Rename folder");
+			item.onClick(() => {
+				// TODO: rename folder
+			});
+		});
+		menu.addItem((item) => {
+			item.setTitle("Delete");
+			item.onClick(() => {
+				plugin.app.vault.delete(folder, true);
+			});
+		});
+		plugin.app.workspace.trigger("folder-context-menu", menu);
+		menu.showAtPosition({ x: e.clientX, y: e.clientY });
 	};
 
 	const folderName = isRoot ? plugin.app.vault.getName() : folder.name;
@@ -62,6 +105,7 @@ const Folder = ({
 		<div
 			className={folderClassNames.join(" ")}
 			onClick={() => setFocusedFolder(folder)}
+			onContextMenu={onShowContextMenu}
 		>
 			<div className="asn-folder-pane-left-sectionn">
 				<span
