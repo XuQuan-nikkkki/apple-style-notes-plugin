@@ -3,6 +3,7 @@ import { TFile, TFolder } from "obsidian";
 
 import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
+import { ASN_FOCUSED_FOLDER_PATH_KEY } from "./assets/constants";
 
 export type FolderSortRule =
 	| "FolderNameAscending"
@@ -31,6 +32,7 @@ export type FileTreeStore = {
 	createFolder: (path: string) => Promise<TFolder>;
 	readFile: (file: TFile) => Promise<string>;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
+	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
 	changeExpandedFolderNames: (folderNames: string[]) => void;
 };
 
@@ -81,6 +83,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			set({
 				focusedFolder: folder,
 			}),
+		setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => {
+			get().setFocusedFolder(folder);
+			localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
+		},
 		setFocusedFile: (file: TFile) =>
 			set({
 				focusedFile: file,

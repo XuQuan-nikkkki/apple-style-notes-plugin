@@ -23,10 +23,10 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		getFilesCountInFolder,
 		hasFolderChildren,
 		focusedFolder,
-		setFocusedFolder,
 		findFolderByPath,
 		getFoldersByParent,
 		sortFolders,
+		setFocusedFolder,
 		expandedFolderNames,
 		changeExpandedFolderNames,
 	} = useFileTreeStore(
@@ -37,10 +37,10 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			hasFolderChildren: store.hasFolderChildren,
 			getTopLevelFolders: store.getTopLevelFolders,
 			focusedFolder: store.focusedFolder,
-			setFocusedFolder: store.setFocusedFolder,
 			findFolderByPath: store.findFolderByPath,
 			getFoldersByParent: store.getFoldersByParent,
 			sortFolders: store.sortFolders,
+			setFocusedFolder: store.setFocusedFolderAndSaveInLocalStorage,
 			expandedFolderNames: store.expandedFolderNames,
 			changeExpandedFolderNames: store.changeExpandedFolderNames,
 		}))
@@ -57,10 +57,10 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		if (lastFocusedFolderPath && lastFocusedFolderPath !== "/") {
 			const folder = findFolderByPath(lastFocusedFolderPath);
 			if (folder) {
-				onSelectFolder(folder);
+				setFocusedFolder(folder);
 			}
 		} else if (rootFolder) {
-			onSelectFolder(rootFolder);
+			setFocusedFolder(rootFolder);
 		}
 		if (lastExpandedFolderNames) {
 			try {
@@ -71,11 +71,6 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			}
 		}
 	}, []);
-
-	const onSelectFolder = (folder: TFolder): void => {
-		setFocusedFolder(folder);
-		localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
-	};
 
 	const onToggleExpandState = (folder: TFolder): void => {
 		if (hasFolderChildren(folder)) {
@@ -101,7 +96,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 					isFocused={folder.path === focusedFolder?.path}
 					isExpanded={expandedFolderNames.includes(folder.name)}
 					onSelectFolder={() => {
-						onSelectFolder(folder);
+						setFocusedFolder(folder);
 					}}
 					onToggleExpandState={() => onToggleExpandState(folder)}
 				/>
@@ -128,7 +123,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 					isExpanded
 					isRoot
 					onSelectFolder={() => {
-						onSelectFolder(rootFolder);
+						setFocusedFolder(rootFolder);
 					}}
 				/>
 			</div>
