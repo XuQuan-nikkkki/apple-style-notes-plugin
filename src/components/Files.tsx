@@ -11,14 +11,21 @@ type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
 };
 const Files = ({ useFileTreeStore }: Props) => {
-	const { focusedFolder, getDirectFilesInFolder, restoreLastFocusedFile } =
-		useFileTreeStore(
-			useShallow((store: FileTreeStore) => ({
-				focusedFolder: store.focusedFolder,
-				getDirectFilesInFolder: store.getDirectFilesInFolder,
-				restoreLastFocusedFile: store.restoreLastFocusedFile,
-			}))
-		);
+	const {
+		focusedFolder,
+		getDirectFilesInFolder,
+		restoreLastFocusedFile,
+		sortFiles,
+		fileSortRule,
+	} = useFileTreeStore(
+		useShallow((store: FileTreeStore) => ({
+			focusedFolder: store.focusedFolder,
+			getDirectFilesInFolder: store.getDirectFilesInFolder,
+			restoreLastFocusedFile: store.restoreLastFocusedFile,
+			sortFiles: store.sortFiles,
+			fileSortRule: store.fileSortRule,
+		}))
+	);
 
 	useEffect(() => {
 		restoreLastFocusedFile();
@@ -36,9 +43,11 @@ const Files = ({ useFileTreeStore }: Props) => {
 
 	const files = getDirectFilesInFolder(focusedFolder);
 	if (!files.length) return renderNoneFilesTips();
+
+	const sortedFiles = sortFiles(files, fileSortRule);
 	return (
 		<>
-			{files.map((file) => (
+			{sortedFiles.map((file) => (
 				<File
 					key={file.name}
 					useFileTreeStore={useFileTreeStore}

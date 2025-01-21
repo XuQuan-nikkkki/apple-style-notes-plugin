@@ -10,6 +10,7 @@ import CreateFolder from "./FolderActions/CreateFolder";
 import ToggleFolders from "./FolderActions/ToggleFolders";
 import SortFolders from "./FolderActions/SortFolders";
 import CreateFile from "./FileActions/CreateFile";
+import SortFiles from "./FileActions/SortFiles";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -49,6 +50,7 @@ const FileTree = ({ plugin }: Props) => {
 			<div className="asn-files-pane">
 				<div className="asn-actions asn-file-actions">
 					<CreateFile useFileTreeStore={useFileTreeStore} />
+					<SortFiles useFileTreeStore={useFileTreeStore} plugin={plugin} />
 				</div>
 				<Files useFileTreeStore={useFileTreeStore} />
 			</div>

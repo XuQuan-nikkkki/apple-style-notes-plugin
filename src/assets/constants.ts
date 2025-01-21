@@ -5,6 +5,7 @@ export const ASN_EXPANDED_FOLDER_PATHS_KEY =
 export const ASN_FOCUSED_FILE_PATH_KEY =
 	"AppleStyleNotesPlugin-FocusedFilePath";
 export const ASN_FOLDER_SORT_RULE_KEY = "AppleStyleNotesPlugin-FolderSortRule";
+export const ASN_FILE_SORT_RULE_KEY = "AppleStyleNotesPlugin-FileSortRule";
 
 export const ASN_FOLDER_PANE_WIDTH_KEY =
 	"AppleStyleNotesPlugin-FolderPaneWidth";

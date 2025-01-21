@@ -50,7 +50,7 @@ const SortFolders = ({ useFileTreeStore, plugin }: Props) => {
 		restoreFolderSortRule();
 	}, []);
 
-	const onChangeSortRule = (e: MouseEvent) => {
+	const onChangeSortRule = (e: React.MouseEvent<HTMLDivElement>) => {
 		const menu = new Menu();
 		const ruleGroups: FolderSortRuleGroup[] = [
 			FolderSortByNameRules,

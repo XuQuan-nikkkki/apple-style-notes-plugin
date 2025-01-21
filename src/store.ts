@@ -5,6 +5,7 @@ import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
 import {
 	ASN_EXPANDED_FOLDER_PATHS_KEY,
+	ASN_FILE_SORT_RULE_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
 	ASN_FOLDER_SORT_RULE_KEY,
@@ -16,6 +17,14 @@ export type FolderSortRule =
 	| "FilesCountAscending"
 	| "FilesCountDescending";
 export const DEFAULT_FOLDER_SORT_RULE: FolderSortRule = "FolderNameAscending";
+export type FileSortRule =
+	| "FileNameAscending"
+	| "FileNameDescending"
+	| "FileCreatedTimeAscending"
+	| "FileCreatedTimeDescending"
+	| "FileModifiedTimeAscending"
+	| "FileModifiedTimeDescending";
+const DEFAULT_FILE_SORT_RULE: FileSortRule = "FileNameAscending";
 
 export type FileTreeStore = {
 	folders: TFolder[];
@@ -23,6 +32,7 @@ export type FileTreeStore = {
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
 	folderSortRule: FolderSortRule;
+	fileSortRule: FileSortRule;
 	expandedFolderPaths: string[];
 
 	// Folders related
@@ -46,12 +56,16 @@ export type FileTreeStore = {
 
 	// Files related
 	findFileByPath: (path: string) => TFile | null;
+	isFilesInAscendingOrder: () => boolean;
 	setFocusedFile: (file: TFile) => void;
 	openFile: (file: TFile) => void;
 	selectFile: (file: TFile) => void;
 	readFile: (file: TFile) => Promise<string>;
 	createFile: (folder: TFolder) => Promise<void>;
 	restoreLastFocusedFile: () => void;
+	changeFileSortRule: (rule: FileSortRule) => void;
+	restoreFileSortRule: () => void;
+	sortFiles: (files: TFile[], rule: FileSortRule) => TFile[];
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -61,6 +75,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		focusedFolder: null,
 		focusedFile: null,
 		folderSortRule: DEFAULT_FOLDER_SORT_RULE,
+		fileSortRule: DEFAULT_FILE_SORT_RULE,
 		expandedFolderPaths: [],
 
 		// Folders related
@@ -206,6 +221,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		findFileByPath: (path: string): TFile | null => {
 			return plugin.app.vault.getFileByPath(path);
 		},
+		isFilesInAscendingOrder: (): boolean => {
+			const { fileSortRule } = get();
+			return fileSortRule.contains("Ascending");
+		},
 		setFocusedFile: (file: TFile) =>
 			set({
 				focusedFile: file,
@@ -235,10 +254,12 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			).length;
 			const newFileNameSuffix =
 				untitledFilesCount == 0 ? "" : untitledFilesCount;
-				console.log(`${defaultFileName}${newFileNameSuffix}.md`);
-			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`
+			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
 			const newFile = await vault.create(newFileName, "");
-			await fileManager.renameFile(newFile, `${folder.path}/${newFileName}`);
+			await fileManager.renameFile(
+				newFile,
+				`${folder.path}/${newFileName}`
+			);
 			get().selectFile(newFile);
 		},
 		restoreLastFocusedFile: () => {
@@ -251,6 +272,40 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				if (file) {
 					selectFile(file);
 				}
+			}
+		},
+		sortFiles: (files: TFile[], rule: FileSortRule): TFile[] => {
+			switch (rule) {
+				case "FileNameAscending":
+					return files.sort((a, b) => a.name.localeCompare(b.name));
+				case "FileNameDescending":
+					return files.sort((a, b) => b.name.localeCompare(a.name));
+				case "FileCreatedTimeAscending":
+					return files.sort((a, b) => a.stat.ctime - b.stat.ctime);
+				case "FileCreatedTimeDescending":
+					return files.sort((a, b) => b.stat.ctime - a.stat.ctime);
+				case "FileModifiedTimeAscending":
+					return files.sort((a, b) => a.stat.mtime - b.stat.mtime);
+				case "FileModifiedTimeDescending":
+					return files.sort((a, b) => b.stat.mtime - a.stat.mtime);
+				default:
+					return files;
+			}
+		},
+		changeFileSortRule: (rule: FileSortRule) => {
+			set({
+				fileSortRule: rule,
+			});
+			localStorage.setItem(ASN_FILE_SORT_RULE_KEY, rule);
+		},
+		restoreFileSortRule: () => {
+			const lastFileSortRule = localStorage.getItem(
+				ASN_FILE_SORT_RULE_KEY
+			);
+			if (lastFileSortRule) {
+				set({
+					fileSortRule: lastFileSortRule as FileSortRule,
+				});
 			}
 		},
 	}));
