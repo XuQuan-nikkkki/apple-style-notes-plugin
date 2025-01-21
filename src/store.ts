@@ -22,22 +22,26 @@ export type FileTreeStore = {
 	focusedFile: TFile | null;
 	folderSortRule: FolderSortRule;
 	expandedFolderNames: string[];
+
+	// Folders related
 	findFolderByPath: (name: string) => TFolder | undefined;
-	findFileByPath: (path: string) => TFile | null;
 	getTopLevelFolders: () => TFolder[];
 	getFilesCountInFolder: (folder: TFolder) => number;
 	getFoldersByParent: (parentFolder: TFolder) => TFolder[];
 	getDirectFilesInFolder: (folder: TFolder) => TFile[];
 	hasFolderChildren: (folder: TFolder) => boolean;
 	setFocusedFolder: (folder: TFolder) => void;
+	createFolder: (path: string) => Promise<TFolder>;
+	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
+	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
+	changeExpandedFolderNames: (folderNames: string[]) => void;
+	
+	// Files related
+	findFileByPath: (path: string) => TFile | null;
 	setFocusedFile: (file: TFile) => void;
 	openFile: (file: TFile) => void;
 	selectFile: (file: TFile) => void;
-	createFolder: (path: string) => Promise<TFolder>;
 	readFile: (file: TFile) => Promise<string>;
-	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
-	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
-	changeExpandedFolderNames: (folderNames: string[]) => void;
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -49,12 +53,12 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		folderSortRule: DEFAULT_FOLDER_SORT_RULE,
 		expandedFolderNames: [],
 
+		// Folders related
+		getTopLevelFolders: () => {
+			return get().folders.filter((folder) => folder.parent?.parent === null);
+		},
 		findFolderByPath: (path: string): TFolder | undefined => {
 			return get().folders.find((folder) => folder.path == path);
-		},
-		getTopLevelFolders: () => {
-			const folders = get().folders;
-			return folders.filter((folder) => folder.parent?.parent === null);
 		},
 		hasFolderChildren: (folder: TFolder): boolean => {
 			return folder.children.some((child) => isFolder(child));
@@ -80,9 +84,6 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		getDirectFilesInFolder: (folder: TFolder): TFile[] => {
 			return folder.children.filter((child) => isFile(child));
 		},
-		findFileByPath: (path: string): TFile | null => {
-			return plugin.app.vault.getFileByPath(path);
-		},
 		setFocusedFolder: (folder: TFolder) =>
 			set({
 				focusedFolder: folder,
@@ -91,29 +92,8 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			get().setFocusedFolder(folder);
 			localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
 		},
-		setFocusedFile: (file: TFile) =>
-			set({
-				focusedFile: file,
-			}),
-		openFile: (file: TFile): void => {
-			const abstractFile = plugin.app.vault.getAbstractFileByPath(
-				file.path
-			);
-			const leaf = plugin.app.workspace.getLeaf();
-			plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
-			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
-		},
-		selectFile: (file: TFile): void => {
-			const { setFocusedFile, openFile } = get();
-			setFocusedFile(file);
-			openFile(file);
-			localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
-		},
 		createFolder: async (path: string): Promise<TFolder> => {
 			return await plugin.app.vault.createFolder(path);
-		},
-		readFile: async (file: TFile): Promise<string> => {
-			return await plugin.app.vault.read(file);
 		},
 		sortFolders: (folders: TFolder[], rule: FolderSortRule): TFolder[] => {
 			if (rule === "FolderNameAscending") {
@@ -139,5 +119,31 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			set({
 				expandedFolderNames: folderNames,
 			});
+		},
+
+		// Files related
+		findFileByPath: (path: string): TFile | null => {
+			return plugin.app.vault.getFileByPath(path);
+		},
+		setFocusedFile: (file: TFile) =>
+			set({
+				focusedFile: file,
+			}),
+		openFile: (file: TFile): void => {
+			const abstractFile = plugin.app.vault.getAbstractFileByPath(
+				file.path
+			);
+			const leaf = plugin.app.workspace.getLeaf();
+			plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
+			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
+		},
+		selectFile: (file: TFile): void => {
+			const { setFocusedFile, openFile } = get();
+			setFocusedFile(file);
+			openFile(file);
+			localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
+		},
+		readFile: async (file: TFile): Promise<string> => {
+			return await plugin.app.vault.read(file);
 		},
 	}));
