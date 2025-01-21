@@ -3,7 +3,6 @@ import { StoreApi, UseBoundStore } from "zustand";
 
 import { FileTreeStore } from "src/store";
 import { EmptyFolderIcon } from "src/assets/icons";
-import { ASN_FOCUSED_FILE_PATH_KEY } from "src/assets/constants";
 
 import File from "./File";
 import { useEffect } from "react";
@@ -12,30 +11,17 @@ type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
 };
 const Files = ({ useFileTreeStore }: Props) => {
-	const {
-		focusedFolder,
-		getDirectFilesInFolder,
-		findFileByPath,
-		selectFile,
-	} = useFileTreeStore(
-		useShallow((store: FileTreeStore) => ({
-			focusedFolder: store.focusedFolder,
-			getDirectFilesInFolder: store.getDirectFilesInFolder,
-			findFileByPath: store.findFileByPath,
-			selectFile: store.selectFile,
-		}))
-	);
+	const { focusedFolder, getDirectFilesInFolder, restoreLastFocusedFile } =
+		useFileTreeStore(
+			useShallow((store: FileTreeStore) => ({
+				focusedFolder: store.focusedFolder,
+				getDirectFilesInFolder: store.getDirectFilesInFolder,
+				restoreLastFocusedFile: store.restoreLastFocusedFile,
+			}))
+		);
 
 	useEffect(() => {
-		const lastFocusedFilePath = localStorage.getItem(
-			ASN_FOCUSED_FILE_PATH_KEY
-		);
-		if (lastFocusedFilePath) {
-			const file = findFileByPath(lastFocusedFilePath);
-			if (file) {
-				selectFile(file);
-			}
-		}
+		restoreLastFocusedFile();
 	}, []);
 
 	const renderNoneFilesTips = () => {

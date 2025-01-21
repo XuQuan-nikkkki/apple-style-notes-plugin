@@ -4,6 +4,7 @@ import { TFile, TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
 import {
+	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
 } from "./assets/constants";
@@ -35,13 +36,16 @@ export type FileTreeStore = {
 	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
 	changeExpandedFolderNames: (folderNames: string[]) => void;
-	
+	restoreExpandedFolderNames: () => void;
+	restoreLastFocusedFolder: () => void;
+
 	// Files related
 	findFileByPath: (path: string) => TFile | null;
 	setFocusedFile: (file: TFile) => void;
 	openFile: (file: TFile) => void;
 	selectFile: (file: TFile) => void;
 	readFile: (file: TFile) => Promise<string>;
+	restoreLastFocusedFile: () => void;
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -55,7 +59,9 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 
 		// Folders related
 		getTopLevelFolders: () => {
-			return get().folders.filter((folder) => folder.parent?.parent === null);
+			return get().folders.filter(
+				(folder) => folder.parent?.parent === null
+			);
 		},
 		findFolderByPath: (path: string): TFolder | undefined => {
 			return get().folders.find((folder) => folder.path == path);
@@ -120,6 +126,35 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				expandedFolderNames: folderNames,
 			});
 		},
+		restoreExpandedFolderNames: () => {
+			const lastExpandedFolderNames = localStorage.getItem(
+				ASN_EXPANDED_FOLDER_NAMES_KEY
+			);
+			if (lastExpandedFolderNames) {
+				try {
+					const folderNames = JSON.parse(lastExpandedFolderNames);
+					set({
+						expandedFolderNames: folderNames,
+					});
+				} catch (error) {
+					console.error("Invalid Json format: ", error);
+				}
+			}
+		},
+		restoreLastFocusedFolder: () => {
+			const lastFocusedFolderPath = localStorage.getItem(
+				ASN_FOCUSED_FOLDER_PATH_KEY
+			);
+			const { rootFolder, setFocusedFolder, findFolderByPath } = get();
+			if (lastFocusedFolderPath && lastFocusedFolderPath !== "/") {
+				const folder = findFolderByPath(lastFocusedFolderPath);
+				if (folder) {
+					setFocusedFolder(folder);
+				}
+			} else if (rootFolder) {
+				setFocusedFolder(rootFolder);
+			}
+		},
 
 		// Files related
 		findFileByPath: (path: string): TFile | null => {
@@ -145,5 +180,17 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		},
 		readFile: async (file: TFile): Promise<string> => {
 			return await plugin.app.vault.read(file);
+		},
+		restoreLastFocusedFile: () => {
+			const lastFocusedFilePath = localStorage.getItem(
+				ASN_FOCUSED_FILE_PATH_KEY
+			);
+			const { findFileByPath, selectFile } = get();
+			if (lastFocusedFilePath) {
+				const file = findFileByPath(lastFocusedFilePath);
+				if (file) {
+					selectFile(file);
+				}
+			}
 		},
 	}));
