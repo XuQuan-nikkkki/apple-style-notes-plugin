@@ -34,7 +34,10 @@ const FileTree = ({ plugin }: Props) => {
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
 				<div className="asn-actions asn-folder-actions">
 					<CreateFolder useFileTreeStore={useFileTreeStore} />
-					<SortFolders useFileTreeStore={useFileTreeStore} />
+					<SortFolders
+						useFileTreeStore={useFileTreeStore}
+						plugin={plugin}
+					/>
 					<ToggleFolders useFileTreeStore={useFileTreeStore} />
 				</div>
 				<Folders plugin={plugin} useFileTreeStore={useFileTreeStore} />

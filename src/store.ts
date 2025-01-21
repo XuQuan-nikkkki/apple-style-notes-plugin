@@ -7,13 +7,14 @@ import {
 	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
+	ASN_FOLDER_SORT_RULE_KEY,
 } from "./assets/constants";
 
 export type FolderSortRule =
 	| "FolderNameAscending"
 	| "FolderNameDescending"
-	| "ItemNumbersAscending"
-	| "ItemNumbersDescending";
+	| "FilesCountAscending"
+	| "FilesCountDescending";
 export const DEFAULT_FOLDER_SORT_RULE: FolderSortRule = "FolderNameAscending";
 
 export type FileTreeStore = {
@@ -31,11 +32,14 @@ export type FileTreeStore = {
 	getFoldersByParent: (parentFolder: TFolder) => TFolder[];
 	getDirectFilesInFolder: (folder: TFolder) => TFile[];
 	hasFolderChildren: (folder: TFolder) => boolean;
+	isFoldersInAscendingOrder: () => boolean;
 	setFocusedFolder: (folder: TFolder) => void;
 	_createFolder: (path: string) => Promise<TFolder>;
 	createNewFolder: (parentFolder: TFolder) => Promise<TFolder | undefined>;
 	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
+	changeFolderSortRule: (rule: FolderSortRule) => void;
+	restoreFolderSortRule: () => void;
 	changeExpandedFolderNames: (folderNames: string[]) => void;
 	restoreExpandedFolderNames: () => void;
 	restoreLastFocusedFolder: () => void;
@@ -91,6 +95,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		getDirectFilesInFolder: (folder: TFolder): TFile[] => {
 			return folder.children.filter((child) => isFile(child));
 		},
+		isFoldersInAscendingOrder: (): boolean => {
+			const { folderSortRule } = get();
+			return folderSortRule.contains("Ascending");
+		},
 		setFocusedFolder: (folder: TFolder) =>
 			set({
 				focusedFolder: folder,
@@ -123,13 +131,13 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				return folders.sort((a, b) => a.name.localeCompare(b.name));
 			} else if (rule === "FolderNameDescending") {
 				return folders.sort((a, b) => b.name.localeCompare(a.name));
-			} else if (rule === "ItemNumbersAscending") {
+			} else if (rule === "FilesCountAscending") {
 				return folders.sort(
 					(a, b) =>
 						get().getFilesCountInFolder(a) -
 						get().getFilesCountInFolder(b)
 				);
-			} else if (rule === "ItemNumbersDescending") {
+			} else if (rule === "FilesCountDescending") {
 				return folders.sort(
 					(a, b) =>
 						get().getFilesCountInFolder(b) -
@@ -137,6 +145,22 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				);
 			}
 			return folders; // 如果没有匹配的规则，返回原始文件夹
+		},
+		changeFolderSortRule: (rule: FolderSortRule) => {
+			set({
+				folderSortRule: rule,
+			});
+			localStorage.setItem(ASN_FOLDER_SORT_RULE_KEY, rule);
+		},
+		restoreFolderSortRule: () => {
+			const lastFolderSortRule = localStorage.getItem(
+				ASN_FOLDER_SORT_RULE_KEY
+			);
+			if (lastFolderSortRule) {
+				set({
+					folderSortRule: lastFolderSortRule as FolderSortRule,
+				});
+			}
 		},
 		changeExpandedFolderNames: (folderNames: string[]) => {
 			set({

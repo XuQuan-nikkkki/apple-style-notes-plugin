@@ -1,52 +1,80 @@
+import { useEffect } from "react";
 import { Menu } from "obsidian";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 import { AscendingSortIcon, DescendingSortIcon } from "src/assets/icons";
-import { FileTreeStore } from "src/store";
+import { FileTreeStore, FolderSortRule } from "src/store";
+import AppleStyleNotesPlugin from "src/main";
+
+type FolderSortRuleItem = {
+	text: string;
+	rule: FolderSortRule;
+};
+type FolderSortRuleGroup = FolderSortRuleItem[];
+const FolderSortByNameRules: FolderSortRuleGroup = [
+	{ text: "Folder name(A to Z)", rule: "FolderNameAscending" },
+	{ text: "Folder name(Z to A)", rule: "FolderNameDescending" },
+];
+const FolderSortByFilesCountRules: FolderSortRuleGroup = [
+	{
+		text: "Files count(small to large)",
+		rule: "FilesCountAscending",
+	},
+	{
+		text: "Files count(large to small)",
+		rule: "FilesCountDescending",
+	},
+];
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
+	plugin: AppleStyleNotesPlugin;
 };
-const SortFolders = ({ useFileTreeStore }: Props) => {
-	const { folderSortRule } = useFileTreeStore(
+const SortFolders = ({ useFileTreeStore, plugin }: Props) => {
+	const {
+		folderSortRule,
+		changeFolderSortRule,
+		isFoldersInAscendingOrder,
+		restoreFolderSortRule,
+	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			folderSortRule: store.folderSortRule,
+			isFoldersInAscendingOrder: store.isFoldersInAscendingOrder,
+			changeFolderSortRule: store.changeFolderSortRule,
+			restoreFolderSortRule: store.restoreFolderSortRule,
 		}))
 	);
 
-	const onChangeSortRule = () => {
-		console.log("clicked");
+	useEffect(() => {
+		restoreFolderSortRule();
+	}, []);
+
+	const onChangeSortRule = (e: MouseEvent) => {
 		const menu = new Menu();
-		menu.addItem((newItem) => {
-			newItem.setTitle("Folder name(A to Z)");
-			newItem.onClick(() => {
-				console.log("folder name");
+		const ruleGroups: FolderSortRuleGroup[] = [
+			FolderSortByNameRules,
+			FolderSortByFilesCountRules,
+		];
+		ruleGroups.forEach((rules) => {
+			rules.forEach(({ text, rule }) => {
+				menu.addItem((newItem) => {
+					newItem
+						.setTitle(text)
+						.setChecked(rule === folderSortRule)
+						.onClick(() => {
+							changeFolderSortRule(rule);
+						});
+				});
 			});
+			menu.addSeparator();
 		});
-		menu.addItem((newItem) => {
-			newItem.setTitle("Folder name(Z to A)");
-			newItem.onClick(() => {
-				console.log("folder name");
-			});
-		});
-		menu.addSeparator();
-		menu.addItem((newItem) => {
-			newItem.setTitle("Files count(small to large)");
-			newItem.onClick(() => {
-				console.log("folder name");
-			});
-		});
-		menu.addItem((newItem) => {
-			newItem.setTitle("Files count(large to small)");
-			newItem.onClick(() => {
-				console.log("folder name");
-			});
-		});
-		// TODO: open menu
+		plugin.app.workspace.trigger("sort-folders-menu", menu);
+		menu.showAtPosition({ x: e.pageX, y: e.pageY });
+		return false;
 	};
 
-	const icon = folderSortRule.contains("Ascending") ? (
+	const icon = isFoldersInAscendingOrder() ? (
 		<AscendingSortIcon />
 	) : (
 		<DescendingSortIcon />
