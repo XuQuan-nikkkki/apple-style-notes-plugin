@@ -32,7 +32,8 @@ export type FileTreeStore = {
 	getDirectFilesInFolder: (folder: TFolder) => TFile[];
 	hasFolderChildren: (folder: TFolder) => boolean;
 	setFocusedFolder: (folder: TFolder) => void;
-	createFolder: (path: string) => Promise<TFolder>;
+	_createFolder: (path: string) => Promise<TFolder>;
+	createNewFolder: (parentFolder: TFolder) => Promise<TFolder | undefined>;
 	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
 	changeExpandedFolderNames: (folderNames: string[]) => void;
@@ -98,8 +99,24 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			get().setFocusedFolder(folder);
 			localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
 		},
-		createFolder: async (path: string): Promise<TFolder> => {
+		_createFolder: async (path: string): Promise<TFolder> => {
 			return await plugin.app.vault.createFolder(path);
+		},
+		createNewFolder: async (
+			parentFolder: TFolder
+		): Promise<TFolder | undefined> => {
+			const { rootFolder, _createFolder } = get();
+			if (!rootFolder) return;
+
+			const newFolderName = "Untitled";
+			const untitledFoldersCount = parentFolder.children.filter(
+				(child) => isFolder(child) && child.name.contains(newFolderName)
+			).length;
+			const newFolderNameSuffix =
+				untitledFoldersCount == 0 ? "" : untitledFoldersCount;
+			await _createFolder(
+				`${parentFolder.path}/${newFolderName} ${newFolderNameSuffix}`
+			);
 		},
 		sortFolders: (folders: TFolder[], rule: FolderSortRule): TFolder[] => {
 			if (rule === "FolderNameAscending") {
@@ -125,6 +142,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			set({
 				expandedFolderNames: folderNames,
 			});
+			localStorage.setItem(
+				ASN_EXPANDED_FOLDER_NAMES_KEY,
+				JSON.stringify(folderNames)
+			);
 		},
 		restoreExpandedFolderNames: () => {
 			const lastExpandedFolderNames = localStorage.getItem(

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
-import { ASN_EXPANDED_FOLDER_NAMES_KEY } from "src/assets/constants";
 import {
 	AddFolderIcon,
 	ExpandIcon,
@@ -12,18 +11,6 @@ import {
 } from "src/assets/icons";
 import CollapseIcon from "src/assets/icons/CollapseIcon";
 import { FileTreeStore, FolderSortRule } from "src/store";
-import { isFolder } from "src/utils";
-
-type AddFolderProps = {
-	onCreateFolder: () => void;
-};
-const AddFolder = ({ onCreateFolder }: AddFolderProps) => {
-	return (
-		<div className="asn-actions-icon-wrapper" onClick={onCreateFolder}>
-			<AddFolderIcon />
-		</div>
-	);
-};
 
 type SortFoldersProps = {
 	sortRule: FolderSortRule;
@@ -107,7 +94,7 @@ const FolderActions = ({ useFileTreeStore }: Props) => {
 		rootFolder,
 		folderSortRule,
 		focusedFolder,
-		createFolder,
+		createNewFolder,
 		changeExpandedFolderNames,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
@@ -115,10 +102,7 @@ const FolderActions = ({ useFileTreeStore }: Props) => {
 			rootFolder: store.rootFolder,
 			folderSortRule: store.folderSortRule,
 			focusedFolder: store.focusedFolder,
-			setFocusedFolder: store.setFocusedFolder,
-			findFolderByPath: store.findFolderByPath,
-			createFolder: store.createFolder,
-			expandedFolderNames: store.expandedFolderNames,
+			createNewFolder: store.createNewFolder,
 			changeExpandedFolderNames: store.changeExpandedFolderNames,
 		}))
 	);
@@ -126,28 +110,18 @@ const FolderActions = ({ useFileTreeStore }: Props) => {
 	const onCreateFolder = async () => {
 		if (!rootFolder) return;
 		const parentFolder = focusedFolder ? focusedFolder : rootFolder;
-		const newFolderName = "Untitled";
-		const untitledFoldersCount = parentFolder.children.filter(
-			(child) => isFolder(child) && child.name.contains(newFolderName)
-		).length;
-		const newFolderNameSuffix =
-			untitledFoldersCount == 0 ? "" : untitledFoldersCount;
-		await createFolder(
-			parentFolder.path + "/" + newFolderName + " " + newFolderNameSuffix
-		);
+		await createNewFolder(parentFolder);
 	};
 
 	const onToggleFoldersExpandState = (folderNames: string[]): void => {
 		changeExpandedFolderNames(folderNames);
-		localStorage.setItem(
-			ASN_EXPANDED_FOLDER_NAMES_KEY,
-			JSON.stringify(folderNames)
-		);
 	};
 
 	return (
 		<div className="asn-actions asn-folder-actions">
-			<AddFolder onCreateFolder={onCreateFolder} />
+			<div className="asn-actions-icon-wrapper" onClick={onCreateFolder}>
+				<AddFolderIcon />
+			</div>
 			<SortFolders sortRule={folderSortRule} />
 			<ToggleFolders
 				onExpandAllFolders={() =>

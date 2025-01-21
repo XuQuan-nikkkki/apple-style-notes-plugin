@@ -1,24 +1,20 @@
 import { TFile } from "obsidian";
 import { useEffect, useState } from "react";
-import { FileTreeStore } from "src/store";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
+import { FileTreeStore } from "src/store";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
 	file: TFile;
 };
 const File = ({ file, useFileTreeStore }: Props) => {
-	const {
-		focusedFile,
-		readFile,
-		selectFile
-	} = useFileTreeStore(
+	const { focusedFile, readFile, selectFile } = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			focusedFile: store.focusedFile,
 			readFile: store.readFile,
-			selectFile: store.selectFile
+			selectFile: store.selectFile,
 		}))
 	);
 

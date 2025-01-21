@@ -3,7 +3,6 @@ import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 import { ArrowDownIcon, ArrowRightIcon, FolderIcon } from "src/assets/icons";
-import { ASN_EXPANDED_FOLDER_NAMES_KEY } from "src/assets/constants";
 import AppleStyleNotesPlugin from "src/main";
 import { FileTreeStore } from "src/store";
 
@@ -44,10 +43,6 @@ const Folder = ({
 				? expandedFolderNames.filter((name) => name !== folder.name)
 				: [...expandedFolderNames, folder.name];
 			changeExpandedFolderNames(folderNames);
-			localStorage.setItem(
-				ASN_EXPANDED_FOLDER_NAMES_KEY,
-				JSON.stringify(folderNames)
-			);
 		}
 	};
 

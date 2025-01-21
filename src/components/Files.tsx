@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi, UseBoundStore } from "zustand";
 
@@ -5,7 +6,6 @@ import { FileTreeStore } from "src/store";
 import { EmptyFolderIcon } from "src/assets/icons";
 
 import File from "./File";
-import { useEffect } from "react";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
