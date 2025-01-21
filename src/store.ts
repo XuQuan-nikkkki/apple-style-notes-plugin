@@ -50,6 +50,7 @@ export type FileTreeStore = {
 	openFile: (file: TFile) => void;
 	selectFile: (file: TFile) => void;
 	readFile: (file: TFile) => Promise<string>;
+	createFile: (folder: TFolder) => Promise<void>;
 	restoreLastFocusedFile: () => void;
 };
 
@@ -225,6 +226,20 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		},
 		readFile: async (file: TFile): Promise<string> => {
 			return await plugin.app.vault.read(file);
+		},
+		createFile: async (folder: TFolder) => {
+			const { vault, fileManager } = plugin.app;
+			const defaultFileName = "Untitled";
+			const untitledFilesCount = folder.children.filter(
+				(child) => isFile(child) && child.name.contains(defaultFileName)
+			).length;
+			const newFileNameSuffix =
+				untitledFilesCount == 0 ? "" : untitledFilesCount;
+				console.log(`${defaultFileName}${newFileNameSuffix}.md`);
+			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`
+			const newFile = await vault.create(newFileName, "");
+			await fileManager.renameFile(newFile, `${folder.path}/${newFileName}`);
+			get().selectFile(newFile);
 		},
 		restoreLastFocusedFile: () => {
 			const lastFocusedFilePath = localStorage.getItem(
