@@ -3,7 +3,10 @@ import { TFile, TFolder } from "obsidian";
 
 import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
-import { ASN_FOCUSED_FOLDER_PATH_KEY } from "./assets/constants";
+import {
+	ASN_FOCUSED_FILE_PATH_KEY,
+	ASN_FOCUSED_FOLDER_PATH_KEY,
+} from "./assets/constants";
 
 export type FolderSortRule =
 	| "FolderNameAscending"
@@ -29,6 +32,7 @@ export type FileTreeStore = {
 	setFocusedFolder: (folder: TFolder) => void;
 	setFocusedFile: (file: TFile) => void;
 	openFile: (file: TFile) => void;
+	selectFile: (file: TFile) => void;
 	createFolder: (path: string) => Promise<TFolder>;
 	readFile: (file: TFile) => Promise<string>;
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
@@ -98,6 +102,12 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			const leaf = plugin.app.workspace.getLeaf();
 			plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
 			leaf.openFile(abstractFile as TFile, { eState: { focus: true } });
+		},
+		selectFile: (file: TFile): void => {
+			const { setFocusedFile, openFile } = get();
+			setFocusedFile(file);
+			openFile(file);
+			localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
 		},
 		createFolder: async (path: string): Promise<TFolder> => {
 			return await plugin.app.vault.createFolder(path);

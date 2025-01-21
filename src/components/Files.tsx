@@ -1,4 +1,3 @@
-import { TFile } from "obsidian";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi, UseBoundStore } from "zustand";
 
@@ -16,16 +15,14 @@ const Files = ({ useFileTreeStore }: Props) => {
 	const {
 		focusedFolder,
 		getDirectFilesInFolder,
-		setFocusedFile,
-		openFile,
 		findFileByPath,
+		selectFile,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			focusedFolder: store.focusedFolder,
 			getDirectFilesInFolder: store.getDirectFilesInFolder,
-			setFocusedFile: store.setFocusedFile,
-			openFile: store.openFile,
 			findFileByPath: store.findFileByPath,
+			selectFile: store.selectFile,
 		}))
 	);
 
@@ -36,7 +33,7 @@ const Files = ({ useFileTreeStore }: Props) => {
 		if (lastFocusedFilePath) {
 			const file = findFileByPath(lastFocusedFilePath);
 			if (file) {
-				onSelectFile(file);
+				selectFile(file);
 			}
 		}
 	}, []);
@@ -47,12 +44,6 @@ const Files = ({ useFileTreeStore }: Props) => {
 				<EmptyFolderIcon />
 			</div>
 		);
-	};
-
-	const onSelectFile = (file: TFile): void => {
-		setFocusedFile(file);
-		openFile(file);
-		localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
 	};
 
 	if (!focusedFolder) return renderNoneFilesTips();

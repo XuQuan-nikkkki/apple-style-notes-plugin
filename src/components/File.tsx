@@ -1,6 +1,5 @@
 import { TFile } from "obsidian";
 import { useEffect, useState } from "react";
-import { ASN_FOCUSED_FILE_PATH_KEY } from "src/assets/constants";
 import { FileTreeStore } from "src/store";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
@@ -14,14 +13,12 @@ const File = ({ file, useFileTreeStore }: Props) => {
 	const {
 		focusedFile,
 		readFile,
-		openFile,
-		setFocusedFile,
+		selectFile
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			focusedFile: store.focusedFile,
 			readFile: store.readFile,
-			openFile: store.openFile,
-			setFocusedFile: store.setFocusedFile,
+			selectFile: store.selectFile
 		}))
 	);
 
@@ -39,16 +36,10 @@ const File = ({ file, useFileTreeStore }: Props) => {
 		loadContent();
 	}, []);
 
-	const onSelectFile = (): void => {
-		setFocusedFile(file);
-		openFile(file);
-		localStorage.setItem(ASN_FOCUSED_FILE_PATH_KEY, file.path);
-	};
-
 	const isFocused = focusedFile?.path === file.path;
 	const className = "asn-file" + (isFocused ? " asn-focused-file" : "");
 	return (
-		<div className={className} onClick={onSelectFile}>
+		<div className={className} onClick={() => selectFile(file)}>
 			<div className="asn-file-name">{file.basename}</div>
 			<div className="asn-file-details">
 				<span className="asn-file-created-time">
