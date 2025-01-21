@@ -1,4 +1,4 @@
-const SortIcon = () => {
+const AscendingSortIcon = () => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -19,4 +19,4 @@ const SortIcon = () => {
 	);
 };
 
-export default SortIcon;
+export default AscendingSortIcon;

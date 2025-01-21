@@ -29,6 +29,7 @@ const FileTree = ({ plugin }: Props) => {
 	const {
 		folders,
 		rootFolder,
+		folderSortRule,
 		getTopLevelFolders,
 		focusedFile,
 		getFilesCountInFolder,
@@ -43,10 +44,12 @@ const FileTree = ({ plugin }: Props) => {
 		openFile,
 		createFolder,
 		readFile,
+		sortFolders,
 	} = useFileTreeStore(
 		useShallow((state: FileTreeStore) => ({
 			folders: state.folders,
 			rootFolder: state.rootFolder,
+			folderSortRule: state.folderSortRule,
 			getFilesCountInFolder: state.getFilesCountInFolder,
 			hasFolderChildren: state.hasFolderChildren,
 			getTopLevelFolders: state.getTopLevelFolders,
@@ -61,6 +64,7 @@ const FileTree = ({ plugin }: Props) => {
 			openFile: state.openFile,
 			createFolder: state.createFolder,
 			readFile: state.readFile,
+			sortFolders: state.sortFolders,
 		}))
 	);
 
@@ -149,7 +153,8 @@ const FileTree = ({ plugin }: Props) => {
 	};
 
 	const renderFolders = (folders: TFolder[]) => {
-		return folders.map((folder) => (
+		const sortedFolders = sortFolders(folders, folderSortRule);
+		return sortedFolders.map((folder) => (
 			<div key={folder.name}>
 				<Folder
 					folderName={folder.name}
@@ -251,6 +256,7 @@ const FileTree = ({ plugin }: Props) => {
 						onToggleFoldersExpandState(folders.map((f) => f.name))
 					}
 					onCollapseAllFolders={() => onToggleFoldersExpandState([])}
+					sortRule={folderSortRule}
 				/>
 				{renderRootFolder()}
 				{renderFolders(topLevelFolders)}

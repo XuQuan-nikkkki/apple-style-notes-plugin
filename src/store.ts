@@ -4,11 +4,19 @@ import { TFile, TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
 
+export type FolderSortRule =
+	| "FolderNameAscending"
+	| "FolderNameDescending"
+	| "ItemNumbersAscending"
+	| "ItemNumbersDescending";
+export const DEFAULT_FOLDER_SORT_RULE: FolderSortRule = "FolderNameAscending";
+
 export type FileTreeStore = {
 	folders: TFolder[];
 	rootFolder: TFolder | null;
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
+	folderSortRule: FolderSortRule;
 	findFolderByPath: (name: string) => TFolder | undefined;
 	findFileByPath: (path: string) => TFile | null;
 	getTopLevelFolders: () => TFolder[];
@@ -21,6 +29,7 @@ export type FileTreeStore = {
 	openFile: (file: TFile) => void;
 	createFolder: (path: string) => Promise<TFolder>;
 	readFile: (file: TFile) => Promise<string>;
+	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
 };
 
 export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
@@ -29,6 +38,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		rootFolder: plugin.app.vault.getRoot() || null,
 		focusedFolder: null,
 		focusedFile: null,
+		folderSortRule: DEFAULT_FOLDER_SORT_RULE,
 
 		findFolderByPath: (path: string): TFolder | undefined => {
 			return get().folders.find((folder) => folder.path == path);
@@ -84,6 +94,26 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			return await plugin.app.vault.createFolder(path);
 		},
 		readFile: async (file: TFile): Promise<string> => {
-			return await plugin.app.vault.read(file)
+			return await plugin.app.vault.read(file);
+		},
+		sortFolders: (folders: TFolder[], rule: FolderSortRule): TFolder[] => {
+			if (rule === "FolderNameAscending") {
+				return folders.sort((a, b) => a.name.localeCompare(b.name));
+			} else if (rule === "FolderNameDescending") {
+				return folders.sort((a, b) => b.name.localeCompare(a.name));
+			} else if (rule === "ItemNumbersAscending") {
+				return folders.sort(
+					(a, b) =>
+						get().getFilesCountInFolder(a) -
+						get().getFilesCountInFolder(b)
+				);
+			} else if (rule === "ItemNumbersDescending") {
+				return folders.sort(
+					(a, b) =>
+						get().getFilesCountInFolder(b) -
+						get().getFilesCountInFolder(a)
+				);
+			}
+			return folders; // 如果没有匹配的规则，返回原始文件夹
 		},
 	}));
