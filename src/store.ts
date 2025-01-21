@@ -4,7 +4,7 @@ import { TFile, TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "./main";
 import { isFile, isFolder } from "./utils";
 import {
-	ASN_EXPANDED_FOLDER_NAMES_KEY,
+	ASN_EXPANDED_FOLDER_PATHS_KEY,
 	ASN_FOCUSED_FILE_PATH_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
 	ASN_FOLDER_SORT_RULE_KEY,
@@ -23,7 +23,7 @@ export type FileTreeStore = {
 	focusedFolder: TFolder | null;
 	focusedFile: TFile | null;
 	folderSortRule: FolderSortRule;
-	expandedFolderNames: string[];
+	expandedFolderPaths: string[];
 
 	// Folders related
 	findFolderByPath: (name: string) => TFolder | undefined;
@@ -40,8 +40,8 @@ export type FileTreeStore = {
 	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
 	changeFolderSortRule: (rule: FolderSortRule) => void;
 	restoreFolderSortRule: () => void;
-	changeExpandedFolderNames: (folderNames: string[]) => void;
-	restoreExpandedFolderNames: () => void;
+	changeExpandedFolderPaths: (folderNames: string[]) => void;
+	restoreExpandedFolderPaths: () => void;
 	restoreLastFocusedFolder: () => void;
 
 	// Files related
@@ -60,7 +60,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		focusedFolder: null,
 		focusedFile: null,
 		folderSortRule: DEFAULT_FOLDER_SORT_RULE,
-		expandedFolderNames: [],
+		expandedFolderPaths: [],
 
 		// Folders related
 		getTopLevelFolders: () => {
@@ -162,24 +162,24 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				});
 			}
 		},
-		changeExpandedFolderNames: (folderNames: string[]) => {
+		changeExpandedFolderPaths: (folderPaths: string[]) => {
 			set({
-				expandedFolderNames: folderNames,
+				expandedFolderPaths: folderPaths,
 			});
 			localStorage.setItem(
-				ASN_EXPANDED_FOLDER_NAMES_KEY,
-				JSON.stringify(folderNames)
+				ASN_EXPANDED_FOLDER_PATHS_KEY,
+				JSON.stringify(folderPaths)
 			);
 		},
-		restoreExpandedFolderNames: () => {
-			const lastExpandedFolderNames = localStorage.getItem(
-				ASN_EXPANDED_FOLDER_NAMES_KEY
+		restoreExpandedFolderPaths: () => {
+			const lastExpandedFolderPaths = localStorage.getItem(
+				ASN_EXPANDED_FOLDER_PATHS_KEY
 			);
-			if (lastExpandedFolderNames) {
+			if (lastExpandedFolderPaths) {
 				try {
-					const folderNames = JSON.parse(lastExpandedFolderNames);
+					const folderPaths = JSON.parse(lastExpandedFolderPaths);
 					set({
-						expandedFolderNames: folderNames,
+						expandedFolderPaths: folderPaths,
 					});
 				} catch (error) {
 					console.error("Invalid Json format: ", error);

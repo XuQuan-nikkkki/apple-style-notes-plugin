@@ -23,33 +23,33 @@ const Folder = ({
 		hasFolderChildren,
 		focusedFolder,
 		setFocusedFolder,
-		expandedFolderNames,
-		changeExpandedFolderNames,
+		expandedFolderPaths,
+		changeExpandedFolderPaths,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			getFilesCountInFolder: store.getFilesCountInFolder,
 			hasFolderChildren: store.hasFolderChildren,
 			focusedFolder: store.focusedFolder,
 			setFocusedFolder: store.setFocusedFolderAndSaveInLocalStorage,
-			expandedFolderNames: store.expandedFolderNames,
-			changeExpandedFolderNames: store.changeExpandedFolderNames,
+			expandedFolderPaths: store.expandedFolderPaths,
+			changeExpandedFolderPaths: store.changeExpandedFolderPaths,
 		}))
 	);
 
 	const onToggleExpandState = (): void => {
 		if (isRoot) return;
 		if (hasFolderChildren(folder)) {
-			const folderNames = expandedFolderNames.includes(folder.name)
-				? expandedFolderNames.filter((name) => name !== folder.name)
-				: [...expandedFolderNames, folder.name];
-			changeExpandedFolderNames(folderNames);
+			const folderPaths = expandedFolderPaths.includes(folder.path)
+				? expandedFolderPaths.filter((path) => path !== folder.path)
+				: [...expandedFolderPaths, folder.path];
+				changeExpandedFolderPaths(folderPaths);
 		}
 	};
 
 	const folderName = isRoot ? plugin.app.vault.getName() : folder.name;
 	const filesCount = getFilesCountInFolder(folder);
 	const isFocused = folder.path == focusedFolder?.path;
-	const isExpanded = isRoot || expandedFolderNames.includes(folder.path);
+	const isExpanded = isRoot || expandedFolderPaths.includes(folder.path);
 
 	const folderClassNames = ["asn-folder"];
 	if (isFocused) {

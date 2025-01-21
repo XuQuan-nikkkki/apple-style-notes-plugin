@@ -19,8 +19,8 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		hasFolderChildren,
 		getFoldersByParent,
 		sortFolders,
-		expandedFolderNames,
-		restoreExpandedFolderNames,
+		expandedFolderPaths,
+		restoreExpandedFolderPaths ,
 		restoreLastFocusedFolder,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
@@ -30,15 +30,15 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			getTopLevelFolders: store.getTopLevelFolders,
 			getFoldersByParent: store.getFoldersByParent,
 			sortFolders: store.sortFolders,
-			expandedFolderNames: store.expandedFolderNames,
-			restoreExpandedFolderNames: store.restoreExpandedFolderNames,
+			expandedFolderPaths: store.expandedFolderPaths,
+			restoreExpandedFolderPaths: store.restoreExpandedFolderPaths,
 			restoreLastFocusedFolder: store.restoreLastFocusedFolder,
 		}))
 	);
 
 	useEffect(() => {
 		restoreLastFocusedFolder();
-		restoreExpandedFolderNames();
+		restoreExpandedFolderPaths();
 	}, []);
 
 	const renderFolders = (folders: TFolder[]) => {
@@ -50,7 +50,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 					useFileTreeStore={useFileTreeStore}
 					plugin={plugin}
 				/>
-				{expandedFolderNames.includes(folder.name) &&
+				{expandedFolderPaths.includes(folder.path) &&
 					hasFolderChildren(folder) && (
 						<div className="asn-sub-folders-section">
 							{renderFolders(getFoldersByParent(folder))}

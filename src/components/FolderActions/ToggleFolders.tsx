@@ -2,17 +2,17 @@ import { useState } from "react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
-import { ExpandIcon,CollapseIcon } from "src/assets/icons";
+import { ExpandIcon, CollapseIcon } from "src/assets/icons";
 import { FileTreeStore } from "src/store";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
 };
 const ToggleFolders = ({ useFileTreeStore }: Props) => {
-	const { folders, changeExpandedFolderNames } = useFileTreeStore(
+	const { folders, restoreExpandedFolderPaths } = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			folders: store.folders,
-			changeExpandedFolderNames: store.changeExpandedFolderNames,
+			restoreExpandedFolderPaths: store.changeExpandedFolderPaths,
 		}))
 	);
 
@@ -20,9 +20,9 @@ const ToggleFolders = ({ useFileTreeStore }: Props) => {
 
 	const onToggleAllFolders = () => {
 		if (isExpanded) {
-			changeExpandedFolderNames([]);
+			restoreExpandedFolderPaths([]);
 		} else {
-			changeExpandedFolderNames(folders.map((f) => f.name));
+			restoreExpandedFolderPaths(folders.map((f) => f.path));
 		}
 		setIsExpanded(!isExpanded);
 	};
