@@ -1,11 +1,11 @@
 import { Fragment, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { StoreApi, UseBoundStore } from "zustand";
+import { TFolder } from "obsidian";
 
 import AppleStyleNotesPlugin from "src/main";
 import { FileTreeStore } from "src/store";
 import Folder from "./Folder";
-import { TFolder } from "obsidian";
 import {
 	ASN_EXPANDED_FOLDER_NAMES_KEY,
 	ASN_FOCUSED_FOLDER_PATH_KEY,
@@ -20,9 +20,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		rootFolder,
 		folderSortRule,
 		getTopLevelFolders,
-		getFilesCountInFolder,
 		hasFolderChildren,
-		focusedFolder,
 		findFolderByPath,
 		getFoldersByParent,
 		sortFolders,
@@ -33,10 +31,8 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		useShallow((store: FileTreeStore) => ({
 			rootFolder: store.rootFolder,
 			folderSortRule: store.folderSortRule,
-			getFilesCountInFolder: store.getFilesCountInFolder,
 			hasFolderChildren: store.hasFolderChildren,
 			getTopLevelFolders: store.getTopLevelFolders,
-			focusedFolder: store.focusedFolder,
 			findFolderByPath: store.findFolderByPath,
 			getFoldersByParent: store.getFoldersByParent,
 			sortFolders: store.sortFolders,
@@ -72,33 +68,14 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		}
 	}, []);
 
-	const onToggleExpandState = (folder: TFolder): void => {
-		if (hasFolderChildren(folder)) {
-			const folderNames = expandedFolderNames.includes(folder.name)
-				? expandedFolderNames.filter((name) => name !== folder.name)
-				: [...expandedFolderNames, folder.name];
-			changeExpandedFolderNames(folderNames);
-			localStorage.setItem(
-				ASN_EXPANDED_FOLDER_NAMES_KEY,
-				JSON.stringify(folderNames)
-			);
-		}
-	};
-
 	const renderFolders = (folders: TFolder[]) => {
 		const sortedFolders = sortFolders(folders, folderSortRule);
 		return sortedFolders.map((folder) => (
 			<div key={folder.name}>
 				<Folder
-					folderName={folder.name}
-					filesCount={getFilesCountInFolder(folder)}
-					hasFolderChildren={hasFolderChildren(folder)}
-					isFocused={folder.path === focusedFolder?.path}
-					isExpanded={expandedFolderNames.includes(folder.name)}
-					onSelectFolder={() => {
-						setFocusedFolder(folder);
-					}}
-					onToggleExpandState={() => onToggleExpandState(folder)}
+					folder={folder}
+					useFileTreeStore={useFileTreeStore}
+					plugin={plugin}
 				/>
 				{expandedFolderNames.includes(folder.name) &&
 					hasFolderChildren(folder) && (
@@ -116,15 +93,10 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		return (
 			<div>
 				<Folder
-					folderName={plugin.app.vault.getName()}
-					filesCount={getFilesCountInFolder(rootFolder)}
-					hasFolderChildren={hasFolderChildren(rootFolder)}
-					isFocused={rootFolder.path === focusedFolder?.path}
-					isExpanded
+					folder={rootFolder}
+					useFileTreeStore={useFileTreeStore}
+					plugin={plugin}
 					isRoot
-					onSelectFolder={() => {
-						setFocusedFolder(rootFolder);
-					}}
 				/>
 			</div>
 		);
