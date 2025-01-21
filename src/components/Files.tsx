@@ -14,22 +14,17 @@ type Props = {
 };
 const Files = ({ useFileTreeStore }: Props) => {
 	const {
-		focusedFile,
 		focusedFolder,
 		getDirectFilesInFolder,
 		setFocusedFile,
 		openFile,
-		readFile,
 		findFileByPath,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			focusedFolder: store.focusedFolder,
-			setFocusedFolder: store.setFocusedFolder,
 			getDirectFilesInFolder: store.getDirectFilesInFolder,
-			focusedFile: store.focusedFile,
 			setFocusedFile: store.setFocusedFile,
 			openFile: store.openFile,
-			readFile: store.readFile,
 			findFileByPath: store.findFileByPath,
 		}))
 	);
@@ -69,10 +64,8 @@ const Files = ({ useFileTreeStore }: Props) => {
 			{files.map((file) => (
 				<File
 					key={file.name}
+					useFileTreeStore={useFileTreeStore}
 					file={file}
-					isFocused={focusedFile?.name === file.name}
-					onSelectFile={() => onSelectFile(file)}
-					onReadFile={readFile}
 				/>
 			))}
 		</>
