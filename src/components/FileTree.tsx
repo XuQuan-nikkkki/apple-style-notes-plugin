@@ -4,10 +4,12 @@ import AppleStyleNotesPlugin from "src/main";
 import { createFileTreeStore } from "src/store";
 import { ASN_FOLDER_PANE_WIDTH_KEY } from "src/assets/constants";
 import DraggableDivider from "./DraggableDivider";
-import FolderActions from "./FolderActions";
 import FileActions from "./FileActions";
 import Files from "./Files";
 import Folders from "./Folders";
+import CreateFolder from "./FolderActions/CreateFolder";
+import ToggleFolders from "./FolderActions/ToggleFolders";
+import SortFolders from "./FolderActions/SortFolders";
 
 type Props = {
 	plugin: AppleStyleNotesPlugin;
@@ -30,7 +32,11 @@ const FileTree = ({ plugin }: Props) => {
 	return (
 		<div className="asn-plugin-container">
 			<div className="asn-folder-pane" style={{ width: folderPaneWidth }}>
-				<FolderActions useFileTreeStore={useFileTreeStore} />
+				<div className="asn-actions asn-folder-actions">
+					<CreateFolder useFileTreeStore={useFileTreeStore} />
+					<SortFolders useFileTreeStore={useFileTreeStore} />
+					<ToggleFolders useFileTreeStore={useFileTreeStore} />
+				</div>
 				<Folders plugin={plugin} useFileTreeStore={useFileTreeStore} />
 			</div>
 			<DraggableDivider
