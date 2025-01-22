@@ -142,6 +142,11 @@ If your plugin does not need CSS, delete this file.
 	color: var(--asn-editing-mode-color) !important;
 }
 
+.asn-files-pane .asn-file-name-edit-mode {
+	background-color: var(--asn-editing-background-color) !important;
+	color: var(--asn-editing-mode-color) !important;
+}
+
 .asn-focused-folder,
 .asn-focused-folder .asn-files-count {
 	color: var(--asn-folder-focused-color);

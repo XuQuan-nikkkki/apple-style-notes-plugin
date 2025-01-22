@@ -6,11 +6,13 @@ import { FileTreeStore } from "src/store";
 import { EmptyFolderIcon } from "src/assets/icons";
 
 import File from "./File";
+import AppleStyleNotesPlugin from "src/main";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
+	plugin: AppleStyleNotesPlugin;
 };
-const Files = ({ useFileTreeStore }: Props) => {
+const Files = ({ useFileTreeStore, plugin }: Props) => {
 	const {
 		focusedFolder,
 		getDirectFilesInFolder,
@@ -52,6 +54,7 @@ const Files = ({ useFileTreeStore }: Props) => {
 					key={file.name}
 					useFileTreeStore={useFileTreeStore}
 					file={file}
+					plugin={plugin}
 				/>
 			))}
 		</>

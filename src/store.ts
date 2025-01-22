@@ -61,7 +61,8 @@ export type FileTreeStore = {
 	openFile: (file: TFile) => void;
 	selectFile: (file: TFile) => void;
 	readFile: (file: TFile) => Promise<string>;
-	createFile: (folder: TFolder) => Promise<void>;
+	createFile: (folder: TFolder) => Promise<TFile>;
+	duplicateFile: (file: TFile) => Promise<TFile>;
 	restoreLastFocusedFile: () => void;
 	changeFileSortRule: (rule: FileSortRule) => void;
 	restoreFileSortRule: () => void;
@@ -261,6 +262,24 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				`${folder.path}/${newFileName}`
 			);
 			get().selectFile(newFile);
+			return newFile;
+		},
+		duplicateFile: async (file: TFile) => {
+			const { vault } = plugin.app;
+			const defaultFileName = file.basename;
+			const folder = file.parent || plugin.app.vault.getRoot();
+			const copiedFilesCount = folder.children.filter(
+				(child) => isFile(child) && child.name.contains(defaultFileName)
+			).length;
+			const newFileNameSuffix =
+				copiedFilesCount == 0 ? "" : copiedFilesCount;
+			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
+			const newFile = await vault.copy(
+				file,
+				`${folder.path}/${newFileName}`
+			);
+			get().selectFile(newFile);
+			return newFile;
 		},
 		restoreLastFocusedFile: () => {
 			const lastFocusedFilePath = localStorage.getItem(

@@ -50,9 +50,12 @@ const FileTree = ({ plugin }: Props) => {
 			<div className="asn-files-pane">
 				<div className="asn-actions asn-file-actions">
 					<CreateFile useFileTreeStore={useFileTreeStore} />
-					<SortFiles useFileTreeStore={useFileTreeStore} plugin={plugin} />
+					<SortFiles
+						useFileTreeStore={useFileTreeStore}
+						plugin={plugin}
+					/>
 				</div>
-				<Files useFileTreeStore={useFileTreeStore} />
+				<Files useFileTreeStore={useFileTreeStore} plugin={plugin} />
 			</div>
 		</div>
 	);

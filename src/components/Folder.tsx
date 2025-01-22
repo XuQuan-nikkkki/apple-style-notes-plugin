@@ -6,6 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ArrowDownIcon, ArrowRightIcon, FolderIcon } from "src/assets/icons";
 import AppleStyleNotesPlugin from "src/main";
 import { FileTreeStore } from "src/store";
+import { moveCursorToEnd, selectText } from "src/utils";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
@@ -89,7 +90,6 @@ const Folder = ({
 			event.preventDefault();
 			setIsEditing(false);
 			setName(folderName);
-			console.log(name);
 			folderNameRef.current?.blur();
 		}
 	};
@@ -104,24 +104,14 @@ const Folder = ({
 	const selectFolderNameText = () => {
 		const element = folderNameRef.current;
 		if (element) {
-			element.focus();
-			const range = document.createRange();
-			range.selectNodeContents(element);
-			const selection = window.getSelection();
-			selection?.removeAllRanges();
-			selection?.addRange(range);
+			selectText(element);
 		}
 	};
 
 	const onMoveCursorToEnd = () => {
 		const element = folderNameRef.current;
 		if (element) {
-			const range = document.createRange();
-			const selection = window.getSelection();
-			range.selectNodeContents(element);
-			range.collapse(false);
-			selection?.removeAllRanges();
-			selection?.addRange(range);
+			moveCursorToEnd(element);
 		}
 	};
 
