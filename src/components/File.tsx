@@ -1,4 +1,4 @@
-import { Menu, TFile } from "obsidian";
+import { Menu, Modal, SuggestModal, TFile } from "obsidian";
 import { useEffect, useRef, useState } from "react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
@@ -6,6 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { FileTreeStore } from "src/store";
 import AppleStyleNotesPlugin from "src/main";
 import { moveCursorToEnd, selectText } from "src/utils";
+import { FolderListModal } from "./FolderListModal";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
@@ -13,16 +14,23 @@ type Props = {
 	plugin: AppleStyleNotesPlugin;
 };
 const File = ({ file, useFileTreeStore, plugin }: Props) => {
-	const { focusedFile, readFile, selectFile, createFile, duplicateFile } =
-		useFileTreeStore(
-			useShallow((store: FileTreeStore) => ({
-				focusedFile: store.focusedFile,
-				readFile: store.readFile,
-				selectFile: store.selectFile,
-				createFile: store.createFile,
-				duplicateFile: store.duplicateFile,
-			}))
-		);
+	const {
+		focusedFile,
+		readFile,
+		selectFile,
+		createFile,
+		duplicateFile,
+		folders,
+	} = useFileTreeStore(
+		useShallow((store: FileTreeStore) => ({
+			focusedFile: store.focusedFile,
+			readFile: store.readFile,
+			selectFile: store.selectFile,
+			createFile: store.createFile,
+			duplicateFile: store.duplicateFile,
+			folders: store.folders,
+		}))
+	);
 
 	const fileNameRef = useRef<HTMLDivElement>(null);
 	const [contentPreview, setContentPreview] = useState<string>("");
@@ -126,6 +134,13 @@ const File = ({ file, useFileTreeStore, plugin }: Props) => {
 			item.setTitle("Duplicate");
 			item.onClick(() => {
 				duplicateFile(file);
+			});
+		});
+		menu.addItem((item) => {
+			item.setTitle("Move file to...");
+			item.onClick(() => {
+				const modal = new FolderListModal(plugin, folders, file);
+				modal.open();
 			});
 		});
 		menu.addSeparator();
