@@ -25,6 +25,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-actions-icon-color: #898989;
 	--asn-file-content-preview-color: #999999;
 	--asn-file-created-time-color: #515151;
+	--asn-editing-mode-color: #000000;
+	--asn-editing-background-color: #ffffff;
 }
 
 .theme-dark {
@@ -38,6 +40,8 @@ If your plugin does not need CSS, delete this file.
 	--asn-actions-icon-color: #a59982;
 	--asn-file-content-preview-color: #9b9d9f;
 	--asn-file-created-time-color: #dddede;
+	--asn-editing-mode-color: #ffffff;
+	--asn-editing-background-color: #000000;
 }
 
 .asn-plugin-view {
@@ -100,7 +104,7 @@ If your plugin does not need CSS, delete this file.
 	display: flex;
 	align-items: center;
 	margin-right: 2px;
-	padding: 2px;	
+	padding: 2px;
 }
 
 .asn-folder-icon {
@@ -131,6 +135,11 @@ If your plugin does not need CSS, delete this file.
 .asn-folder-pane .asn-focused-folder {
 	background-color: var(--asn-focused-folder-background-color);
 	border-radius: var(--asn-folder-border-radius);
+}
+
+.asn-folder-pane .asn-folder-name-edit-mode {
+	background-color: var(--asn-editing-background-color) !important;
+	color: var(--asn-editing-mode-color) !important;
 }
 
 .asn-focused-folder,

@@ -1,4 +1,5 @@
 import { Menu, TFolder } from "obsidian";
+import { useEffect, useRef, useState } from "react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
@@ -40,6 +41,11 @@ const Folder = ({
 		}))
 	);
 
+	const folderName = isRoot ? plugin.app.vault.getName() : folder.name;
+	const folderNameRef = useRef<HTMLDivElement>(null);
+	const [isEditing, setIsEditing] = useState(false);
+	const [name, setName] = useState(folderName);
+
 	const isFolderExpanded = expandedFolderPaths.includes(folder.path);
 
 	const onToggleExpandState = (): void => {
@@ -50,6 +56,79 @@ const Folder = ({
 				: [...expandedFolderPaths, folder.path];
 			changeExpandedFolderPaths(folderPaths);
 		}
+	};
+
+	const onSaveNewName = async () => {
+		try {
+			const newPath = folder.path.replace(folder.name, name);
+			await plugin.app.vault.rename(folder, newPath);
+			setIsEditing(false);
+		} catch (error) {
+			console.error("保存失败：", error);
+			alert("内容保存失败，请重试！");
+		}
+	};
+
+	const onClickOutside = (event: MouseEvent) => {
+		if (
+			folderNameRef?.current &&
+			!folderNameRef.current.contains(event.target)
+		) {
+			if (isEditing) {
+				onSaveNewName();
+			}
+		}
+	};
+
+	const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			onSaveNewName();
+			folderNameRef?.current?.blur();
+		} else if (event.key === "Escape") {
+			event.preventDefault();
+			setIsEditing(false);
+			setName(folderName);
+			console.log(name);
+			folderNameRef.current?.blur();
+		}
+	};
+
+	useEffect(() => {
+		document.addEventListener("mousedown", onClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", onClickOutside);
+		};
+	}, [isEditing, name]);
+
+	const selectFolderNameText = () => {
+		const element = folderNameRef.current;
+		if (element) {
+			element.focus();
+			const range = document.createRange();
+			range.selectNodeContents(element);
+			const selection = window.getSelection();
+			selection?.removeAllRanges();
+			selection?.addRange(range);
+		}
+	};
+
+	const onMoveCursorToEnd = () => {
+		const element = folderNameRef.current;
+		if (element) {
+			const range = document.createRange();
+			const selection = window.getSelection();
+			range.selectNodeContents(element);
+			range.collapse(false);
+			selection?.removeAllRanges();
+			selection?.addRange(range);
+		}
+	};
+
+	const onInputNewName = (e: React.FormEvent<HTMLDivElement>) => {
+		const target = e.target as HTMLDivElement;
+		setName(target.textContent || "");
+		onMoveCursorToEnd();
 	};
 
 	const onShowContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -76,7 +155,11 @@ const Folder = ({
 		menu.addItem((item) => {
 			item.setTitle("Rename folder");
 			item.onClick(() => {
-				// TODO: rename folder
+				setIsEditing(true);
+				setName(folderName);
+				setTimeout(() => {
+					selectFolderNameText();
+				}, 50);
 			});
 		});
 		menu.addItem((item) => {
@@ -89,7 +172,6 @@ const Folder = ({
 		menu.showAtPosition({ x: e.clientX, y: e.clientY });
 	};
 
-	const folderName = isRoot ? plugin.app.vault.getName() : folder.name;
 	const filesCount = getFilesCountInFolder(folder);
 	const isFocused = folder.path == focusedFolder?.path;
 	const isExpanded = isRoot || expandedFolderPaths.includes(folder.path);
@@ -101,6 +183,9 @@ const Folder = ({
 	if (isRoot) {
 		folderClassNames.push("asn-root-folder");
 	}
+
+	const folderNameClassName =
+		"asn-folder-name" + (isEditing ? " asn-folder-name-edit-mode" : "");
 	return (
 		<div
 			className={folderClassNames.join(" ")}
@@ -120,7 +205,15 @@ const Folder = ({
 						(isExpanded ? <ArrowDownIcon /> : <ArrowRightIcon />)}
 				</span>
 				<FolderIcon />
-				<div className="asn-folder-name">{folderName}</div>
+				<div
+					ref={folderNameRef}
+					className={folderNameClassName}
+					contentEditable={isEditing}
+					onKeyDown={onKeyDown}
+					onInput={onInputNewName}
+				>
+					{name}
+				</div>
 			</div>
 			<span className="asn-files-count">{filesCount}</span>
 		</div>
