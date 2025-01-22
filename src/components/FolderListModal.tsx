@@ -1,18 +1,18 @@
-import { Notice, SuggestModal, TFile, TFolder } from "obsidian";
+import { SuggestModal, TAbstractFile, TFile, TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "src/main";
 
 export class FolderListModal extends SuggestModal<TFolder> {
 	folders: TFolder[];
-	file: TFile;
+	item: TAbstractFile;
 
 	constructor(
 		plugin: AppleStyleNotesPlugin,
 		folders: TFolder[],
-		file: TFile
+		item: TAbstractFile
 	) {
 		super(plugin.app);
 		this.folders = folders;
-		this.file = file;
+		this.item = item;
 		this.setPlaceholder("Type a folder");
 		this.setInstructions([
 			{ command: "↑↓", purpose: "to navigate" },
@@ -32,7 +32,7 @@ export class FolderListModal extends SuggestModal<TFolder> {
 	}
 
 	onChooseSuggestion(folder: TFolder, evt: MouseEvent | KeyboardEvent) {
-		const newPath = folder.path + "/" + this.file.name;
-		this.app.fileManager.renameFile(this.file, newPath);
+		const newPath = folder.path + "/" + this.item.name;
+		this.app.fileManager.renameFile(this.item, newPath);
 	}
 }

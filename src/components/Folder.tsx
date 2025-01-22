@@ -7,6 +7,7 @@ import { ArrowDownIcon, ArrowRightIcon, FolderIcon } from "src/assets/icons";
 import AppleStyleNotesPlugin from "src/main";
 import { FileTreeStore } from "src/store";
 import { moveCursorToEnd, selectText } from "src/utils";
+import { FolderListModal } from "./FolderListModal";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
@@ -29,6 +30,7 @@ const Folder = ({
 		changeExpandedFolderPaths,
 		createNewFolder,
 		createFile,
+		folders
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			getFilesCountInFolder: store.getFilesCountInFolder,
@@ -39,6 +41,7 @@ const Folder = ({
 			changeExpandedFolderPaths: store.changeExpandedFolderPaths,
 			createNewFolder: store.createNewFolder,
 			createFile: store.createFile,
+			folders: store.folders,
 		}))
 	);
 
@@ -139,6 +142,14 @@ const Folder = ({
 				if (!isFolderExpanded) {
 					onToggleExpandState();
 				}
+			});
+		});
+		menu.addSeparator();
+		menu.addItem((item) => {
+			item.setTitle("Move file to...");
+			item.onClick(() => {
+				const modal = new FolderListModal(plugin, folders, folder);
+				modal.open();
 			});
 		});
 		menu.addSeparator();

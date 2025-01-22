@@ -1,4 +1,4 @@
-import { Menu, Modal, SuggestModal, TFile } from "obsidian";
+import { Menu, TFile } from "obsidian";
 import { useEffect, useRef, useState } from "react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
