@@ -63,7 +63,6 @@ export default class AppleStyleNotesPlugin extends Plugin {
 	};
 
 	onDelete: (file: TAbstractFile) => void = (file) => {
-		console.log("on delete", file);
 		this.triggerVaultChangeEvent(file, "delete");
 	};
 
