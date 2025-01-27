@@ -1,8 +1,9 @@
-import { Plugin } from "obsidian";
+import { Plugin, TAbstractFile } from "obsidian";
 
 import { FileTreeView } from "./FileTreeView";
 import { SettingTab } from "./SettingTab";
 import { AppleStyleNotesPluginSettings, DEFAULT_SETTINGS } from "./settings";
+import { VaultChangeEventName, VaultChangeType } from "./assets/constants";
 
 export default class AppleStyleNotesPlugin extends Plugin {
 	settings: AppleStyleNotesPluginSettings;
@@ -34,24 +35,49 @@ export default class AppleStyleNotesPlugin extends Plugin {
 			await this.openFileTreeLeaf(true);
 		});
 
-		this.app.vault.on("create", (file) => {
-			this.refreshTreeLeafs(true);
-		});
-
-		this.app.vault.on("modify", (file) => {
-			this.refreshTreeLeafs(false);
-		});
-
-		this.app.vault.on("delete", (file) => {
-			this.refreshTreeLeafs(false);
-		});
-
-		this.app.vault.on("rename", (file) => {
-			this.refreshTreeLeafs(false);
-		});
+		this.app.vault.on("create", this.onCreate);
+		this.app.vault.on("modify", this.onModify);
+		this.app.vault.on("delete", this.onDelete);
+		this.app.vault.on("rename", this.onRename);
 	}
 
-	onunload() {}
+	triggerVaultChangeEvent = (
+		file: TAbstractFile,
+		changeType: VaultChangeType
+	) => {
+		const event = new CustomEvent(VaultChangeEventName, {
+			detail: {
+				file,
+				changeType,
+			},
+		});
+		window.dispatchEvent(event);
+	};
+
+	onCreate: (file: TAbstractFile) => void = (file) => {
+		this.triggerVaultChangeEvent(file, "create");
+	};
+
+	onModify: (file: TAbstractFile) => void = (file) => {
+		this.triggerVaultChangeEvent(file, "modify");
+	};
+
+	onDelete: (file: TAbstractFile) => void = (file) => {
+		console.log("on delete", file);
+		this.triggerVaultChangeEvent(file, "delete");
+	};
+
+	onRename: (file: TAbstractFile) => void = (file) => {
+		this.triggerVaultChangeEvent(file, "rename");
+	};
+
+	onunload() {
+		this.detachFileTreeLeafs();
+		this.app.vault.off("create", this.onCreate);
+		this.app.vault.off("modify", this.onModify);
+		this.app.vault.off("delete", this.onDelete);
+		this.app.vault.off("rename", this.onRename);
+	}
 
 	openFileTreeLeaf = async (showAfterAttach: boolean) => {
 		const leafs = this.app.workspace.getLeavesOfType(this.VIEW_TYPE);

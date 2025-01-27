@@ -12,8 +12,9 @@ type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
 	file: TFile;
 	plugin: AppleStyleNotesPlugin;
+	deleteFile: () => void;
 };
-const File = ({ file, useFileTreeStore, plugin }: Props) => {
+const File = ({ file, useFileTreeStore, plugin, deleteFile }: Props) => {
 	const {
 		focusedFile,
 		readFile,
@@ -156,8 +157,9 @@ const File = ({ file, useFileTreeStore, plugin }: Props) => {
 		});
 		menu.addItem((item) => {
 			item.setTitle("Delete");
-			item.onClick(() => {
-				plugin.app.vault.delete(file, true);
+			item.onClick(async () => {
+				deleteFile();
+				await plugin.app.vault.delete(file, true);
 			});
 		});
 		plugin.app.workspace.trigger("file-context-menu", menu);

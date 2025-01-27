@@ -248,7 +248,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			return await plugin.app.vault.read(file);
 		},
 		createFile: async (folder: TFolder) => {
-			const { vault, fileManager } = plugin.app;
+			const { vault } = plugin.app;
 			const defaultFileName = "Untitled";
 			const untitledFilesCount = folder.children.filter(
 				(child) => isFile(child) && child.name.contains(defaultFileName)
@@ -256,11 +256,7 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			const newFileNameSuffix =
 				untitledFilesCount == 0 ? "" : untitledFilesCount;
 			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
-			const newFile = await vault.create(newFileName, "");
-			await fileManager.renameFile(
-				newFile,
-				`${folder.path}/${newFileName}`
-			);
+			const newFile = await vault.create(`${folder.path}/${newFileName}`, "");
 			get().selectFile(newFile);
 			return newFile;
 		},
