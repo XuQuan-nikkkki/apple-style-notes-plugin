@@ -6,6 +6,8 @@ import { TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "src/main";
 import { FileTreeStore } from "src/store";
 import Folder from "./Folder";
+import { VaultChangeEvent, VaultChangeEventName } from "src/assets/constants";
+import { isFolder } from "src/utils";
 
 type Props = {
 	useFileTreeStore: UseBoundStore<StoreApi<FileTreeStore>>;
@@ -20,7 +22,7 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		getFoldersByParent,
 		sortFolders,
 		expandedFolderPaths,
-		restoreExpandedFolderPaths ,
+		restoreExpandedFolderPaths,
 		restoreLastFocusedFolder,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
@@ -40,6 +42,22 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 		restoreLastFocusedFolder();
 		restoreExpandedFolderPaths();
 	}, []);
+
+	useEffect(() => {
+		window.addEventListener(VaultChangeEventName, onHandleVaultChange);
+		return () => {
+			window.removeEventListener(
+				VaultChangeEventName,
+				onHandleVaultChange
+			);
+		};
+	}, []);
+
+	const onHandleVaultChange = (event: VaultChangeEvent) => {
+		const { file } = event.detail;
+		if (!isFolder(file)) return;
+		restoreExpandedFolderPaths();
+	};
 
 	const renderFolders = (folders: TFolder[]) => {
 		const sortedFolders = sortFolders(folders, folderSortRule);
