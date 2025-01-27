@@ -3,7 +3,7 @@
 	"name": "Apple Style Notes Plugin",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "Splits folder and file lists into separate views, simplifying navigation, improving clarity, and making it more intuitive to organize your notes.",
 	"author": "Xu Quan",
 	"authorUrl": "https://xuquan.site/",
 	"isDesktopOnly": false
