@@ -90,6 +90,7 @@ If your plugin does not need CSS, delete this file.
 
 .asn-root-folder {
 	font-size: 14px;
+	font-weight: 450;
 }
 
 .asn-folder-pane-left-sectionn {
@@ -112,6 +113,15 @@ If your plugin does not need CSS, delete this file.
 	height: 12px;
 	fill: #d19600;
 	margin-right: 8px;
+}
+
+.asn-root-folder .asn-folder-icon {
+	width: 16px;
+	height: 14px;
+}
+
+.asn-root-folder .asn-folder-arrow-icon-wrapper {
+	width: 4px;
 }
 
 .asn-root-folder .asn-root-folder-icon {
