@@ -1,4 +1,4 @@
-import { SuggestModal, TAbstractFile, TFile, TFolder } from "obsidian";
+import { SuggestModal, TAbstractFile, TFolder } from "obsidian";
 import AppleStyleNotesPlugin from "src/main";
 
 export class FolderListModal extends SuggestModal<TFolder> {
@@ -11,7 +11,7 @@ export class FolderListModal extends SuggestModal<TFolder> {
 		item: TAbstractFile
 	) {
 		super(plugin.app);
-		this.folders = folders;
+		this.folders = [plugin.app.vault.getRoot(), ...folders];
 		this.item = item;
 		this.setPlaceholder("Type a folder");
 		this.setInstructions([
@@ -28,7 +28,9 @@ export class FolderListModal extends SuggestModal<TFolder> {
 	}
 
 	renderSuggestion(folder: TFolder, el: HTMLElement) {
-		el.createEl("div", { text: folder.path });
+		el.createEl("div", {
+			text: folder.isRoot() ? this.app.vault.getName() : folder.path,
+		});
 	}
 
 	onChooseSuggestion(folder: TFolder, evt: MouseEvent | KeyboardEvent) {
