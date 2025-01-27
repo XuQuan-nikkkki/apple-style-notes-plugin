@@ -48,7 +48,7 @@ const File = ({ file, useFileTreeStore, plugin, deleteFile }: Props) => {
 
 	const onSaveNewName = async () => {
 		try {
-			const newPath = file.path.replace(file.name, name);
+			const newPath = file.path.replace(file.basename, name);
 			await plugin.app.vault.rename(file, newPath);
 			setIsEditing(false);
 		} catch (error) {
