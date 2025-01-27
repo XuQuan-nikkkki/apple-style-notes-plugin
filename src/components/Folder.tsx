@@ -160,7 +160,7 @@ const Folder = ({
 				setName(folderName);
 				setTimeout(() => {
 					selectFolderNameText();
-				}, 50);
+				}, 100);
 			});
 		});
 		menu.addItem((item) => {

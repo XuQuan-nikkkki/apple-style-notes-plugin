@@ -152,7 +152,7 @@ const File = ({ file, useFileTreeStore, plugin, deleteFile }: Props) => {
 				setName(file.basename);
 				setTimeout(() => {
 					selectFileNameText();
-				}, 50);
+				}, 100);
 			});
 		});
 		menu.addItem((item) => {
