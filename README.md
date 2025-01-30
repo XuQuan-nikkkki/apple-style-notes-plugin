@@ -1,5 +1,7 @@
 # Apple Style Notes Plugin
 
+[英文](./README.md) | [中文](./README-CN.md)
+
 **Apple Style Notes** is an Obsidian plugin that brings a fresh approach to file management by splitting folders and files into distinct, visually separated lists. Inspired by Apple's elegant design principles, this plugin offers a cleaner, more intuitive way to browse and organize your notes.
 
 ## Features
