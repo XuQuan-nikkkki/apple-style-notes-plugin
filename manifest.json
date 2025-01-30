@@ -1,6 +1,6 @@
 {
 	"id": "apple-style-notes",
-	"name": "Apple Style Notes Plugin",
+	"name": "Apple Style Notes",
 	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Splits folder and file lists into separate views, simplifying navigation, improving clarity, and making it more intuitive to organize your notes.",
