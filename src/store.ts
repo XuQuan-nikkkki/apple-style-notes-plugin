@@ -139,9 +139,9 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 				(child) => isFolder(child) && child.name.contains(newFolderName)
 			).length;
 			const newFolderNameSuffix =
-				untitledFoldersCount == 0 ? "" : untitledFoldersCount;
+				untitledFoldersCount == 0 ? "" : ` ${untitledFoldersCount}`;
 			const newFolder = await _createFolder(
-				`${parentFolder.path}/${newFolderName} ${newFolderNameSuffix}`
+				`${parentFolder.path}/${newFolderName}${newFolderNameSuffix}`
 			);
 			return newFolder;
 		},
