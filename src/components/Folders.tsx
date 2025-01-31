@@ -66,7 +66,6 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 			case "create":
 				if (file.parent?.isRoot()) {
 					setTopFolders((prevFolders) => [...prevFolders, file]);
-					console.log(file);
 				}
 				break;
 			case "delete":
