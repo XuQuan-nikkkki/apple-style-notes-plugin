@@ -125,7 +125,8 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			localStorage.setItem(ASN_FOCUSED_FOLDER_PATH_KEY, folder.path);
 		},
 		_createFolder: async (path: string): Promise<TFolder> => {
-			return await plugin.app.vault.createFolder(path);
+			const newFolder = await plugin.app.vault.createFolder(path);
+			return newFolder;
 		},
 		createNewFolder: async (
 			parentFolder: TFolder
@@ -139,9 +140,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			).length;
 			const newFolderNameSuffix =
 				untitledFoldersCount == 0 ? "" : untitledFoldersCount;
-			await _createFolder(
+			const newFolder = await _createFolder(
 				`${parentFolder.path}/${newFolderName} ${newFolderNameSuffix}`
 			);
+			return newFolder;
 		},
 		sortFolders: (folders: TFolder[], rule: FolderSortRule): TFolder[] => {
 			if (rule === "FolderNameAscending") {
@@ -256,7 +258,10 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			const newFileNameSuffix =
 				untitledFilesCount == 0 ? "" : untitledFilesCount;
 			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
-			const newFile = await vault.create(`${folder.path}/${newFileName}`, "");
+			const newFile = await vault.create(
+				`${folder.path}/${newFileName}`,
+				""
+			);
 			get().selectFile(newFile);
 			return newFile;
 		},
