@@ -159,7 +159,7 @@ const File = ({ file, useFileTreeStore, plugin, deleteFile }: Props) => {
 			item.setTitle("Delete");
 			item.onClick(async () => {
 				deleteFile();
-				await plugin.app.vault.delete(file, true);
+				await plugin.app.fileManager.trashFile(file);
 			});
 		});
 		plugin.app.workspace.trigger("file-context-menu", menu);

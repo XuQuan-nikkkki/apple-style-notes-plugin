@@ -166,7 +166,7 @@ const Folder = ({
 		menu.addItem((item) => {
 			item.setTitle("Delete");
 			item.onClick(() => {
-				plugin.app.vault.delete(folder, true);
+				plugin.app.fileManager.trashFile(folder);
 			});
 		});
 		plugin.app.workspace.trigger("folder-context-menu", menu);
