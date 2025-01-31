@@ -134,14 +134,32 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			const { rootFolder, _createFolder } = get();
 			if (!rootFolder) return;
 
-			const newFolderName = "Untitled";
-			const untitledFoldersCount = parentFolder.children.filter(
-				(child) => isFolder(child) && child.name.contains(newFolderName)
-			).length;
-			const newFolderNameSuffix =
-				untitledFoldersCount == 0 ? "" : ` ${untitledFoldersCount}`;
+			const baseFolderName = "Untitled";
+			let newFolderName = baseFolderName;
+			let untitledFoldersCount = 0;
+
+			parentFolder.children.forEach((child) => {
+				if (!isFolder(child)) return;
+
+				if (child.name === newFolderName) {
+					untitledFoldersCount++;
+				} else if (child.name.startsWith(baseFolderName)) {
+					const suffix = child.name
+						.replace(baseFolderName, "")
+						.trim();
+					const number = parseInt(suffix, 10);
+					if (!isNaN(number) && number > untitledFoldersCount) {
+						untitledFoldersCount = number;
+					}
+				}
+			});
+
+			if (untitledFoldersCount > 0) {
+				newFolderName = `${baseFolderName} ${untitledFoldersCount + 1}`;
+			}
+
 			const newFolder = await _createFolder(
-				`${parentFolder.path}/${newFolderName}${newFolderNameSuffix}`
+				`${parentFolder.path}/${newFolderName}`
 			);
 			return newFolder;
 		},
@@ -252,14 +270,30 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		createFile: async (folder: TFolder) => {
 			const { vault } = plugin.app;
 			const defaultFileName = "Untitled";
-			const untitledFilesCount = folder.children.filter(
-				(child) => isFile(child) && child.name.contains(defaultFileName)
-			).length;
-			const newFileNameSuffix =
-				untitledFilesCount == 0 ? "" : untitledFilesCount;
-			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
+			let newFileName = defaultFileName;
+			let untitledFilesCount = 0;
+
+			folder.children.forEach((child) => {
+				if (!isFile(child)) return;
+
+				if (child.basename === newFileName) {
+					untitledFilesCount++;
+				} else if (child.name.startsWith(defaultFileName)) {
+					const suffix = child.basename
+						.replace(defaultFileName, "")
+						.trim();
+					const number = parseInt(suffix, 10);
+					if (!isNaN(number) && number > untitledFilesCount) {
+						untitledFilesCount = number;
+					}
+				}
+			});
+
+			if (untitledFilesCount > 0) {
+				newFileName = `${defaultFileName} ${untitledFilesCount + 1}.md`;
+			}
 			const newFile = await vault.create(
-				`${folder.path}/${newFileName}`,
+				`${folder.path}/${newFileName}.md`,
 				""
 			);
 			get().selectFile(newFile);
@@ -269,12 +303,11 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			const { vault } = plugin.app;
 			const defaultFileName = file.basename;
 			const folder = file.parent || plugin.app.vault.getRoot();
-			const copiedFilesCount = folder.children.filter(
-				(child) => isFile(child) && child.name.contains(defaultFileName)
-			).length;
-			const newFileNameSuffix =
-				copiedFilesCount == 0 ? "" : copiedFilesCount;
-			const newFileName = `${defaultFileName}${newFileNameSuffix}.md`;
+
+			const newFileName = `${defaultFileName} copy.md`;
+			if (folder.children.some((child) => child.name === newFileName)) {
+				alert("文件已存在，请重命名后再试。");
+			}
 			const newFile = await vault.copy(
 				file,
 				`${folder.path}/${newFileName}`
