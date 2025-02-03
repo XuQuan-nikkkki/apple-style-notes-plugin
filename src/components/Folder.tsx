@@ -146,7 +146,7 @@ const Folder = ({
 		});
 		menu.addSeparator();
 		menu.addItem((item) => {
-			item.setTitle("Move file to...");
+			item.setTitle("Move folder to...");
 			item.onClick(() => {
 				const modal = new FolderListModal(plugin, folders, folder);
 				modal.open();
