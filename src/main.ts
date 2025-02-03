@@ -1,7 +1,7 @@
 import { Plugin, TAbstractFile } from "obsidian";
 
 import { FileTreeView } from "./FileTreeView";
-// import { SettingTab } from "./SettingTab";
+import { SettingTab } from "./SettingTab";
 import { AppleStyleNotesPluginSettings, DEFAULT_SETTINGS } from "./settings";
 import { VaultChangeEventName, VaultChangeType } from "./assets/constants";
 
@@ -15,7 +15,7 @@ export default class AppleStyleNotesPlugin extends Plugin {
 	async onload() {
 		console.log("Apple Styled Notes Plugin onload");
 
-		// this.addSettingTab(new SettingTab(this.app, this));
+		this.addSettingTab(new SettingTab(this.app, this));
 
 		this.registerView(
 			this.VIEW_TYPE,

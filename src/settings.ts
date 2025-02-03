@@ -1,7 +1,9 @@
+export type expandFolderByClickingOnElement = "icon" | "folder";
+
 export interface AppleStyleNotesPluginSettings {
-	mySetting: string;
+	expandFolderByClickingOn: expandFolderByClickingOnElement;
 }
 
 export const DEFAULT_SETTINGS: AppleStyleNotesPluginSettings = {
-	mySetting: "default",
+	expandFolderByClickingOn: "icon",
 };

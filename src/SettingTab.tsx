@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import AppleStyleNotesPlugin from "./main";
+import { expandFolderByClickingOnElement } from "./settings";
 
 export class SettingTab extends PluginSettingTab {
 	plugin: AppleStyleNotesPlugin;
@@ -15,16 +16,17 @@ export class SettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Setting #1")
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.mySetting)
-					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
-					})
-			);
+			.setName("Expand Folder on Click")
+			.setDesc(
+				"Choose whether to expand a folder by clicking on the toggle icon (▶/▼) or the folder name."
+			)
+			.addDropdown((cb) => {
+				cb.addOption("icon", "Toggle Icon");
+				cb.addOption("folder", "Folder Name");
+				cb.onChange(async (val: expandFolderByClickingOnElement) => {
+					this.plugin.settings.expandFolderByClickingOn = val;
+					await this.plugin.saveSettings();
+				});
+			});
 	}
 }

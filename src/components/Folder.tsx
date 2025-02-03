@@ -51,6 +51,8 @@ const Folder = ({
 	const [name, setName] = useState(folderName);
 
 	const isFolderExpanded = expandedFolderPaths.includes(folder.path);
+	const expandFolderByClickingOnElement =
+		plugin.settings.expandFolderByClickingOn;
 
 	const onToggleExpandState = (): void => {
 		if (isRoot) return;
@@ -60,6 +62,13 @@ const Folder = ({
 				: [...expandedFolderPaths, folder.path];
 			changeExpandedFolderPaths(folderPaths);
 		}
+	};
+
+	const onClickToExpandFolder = (
+		e: React.MouseEvent<HTMLElement, MouseEvent>
+	) => {
+		e.stopPropagation();
+		onToggleExpandState();
 	};
 
 	const onSaveNewName = async () => {
@@ -193,12 +202,20 @@ const Folder = ({
 			onClick={() => setFocusedFolder(folder)}
 			onContextMenu={onShowContextMenu}
 		>
-			<div className="asn-folder-pane-left-sectionn">
+			<div
+				className="asn-folder-pane-left-sectionn"
+				onClick={(e) => {
+					if (expandFolderByClickingOnElement == "folder") {
+						onClickToExpandFolder(e);
+					}
+				}}
+			>
 				<span
 					className="asn-folder-arrow-icon-wrapper"
 					onClick={(e) => {
-						e.stopPropagation();
-						onToggleExpandState();
+						if (expandFolderByClickingOnElement == "icon") {
+							onClickToExpandFolder(e);
+						}
 					}}
 				>
 					{hasFolderChildren(folder) &&
