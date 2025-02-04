@@ -18,3 +18,5 @@ export type VaultChangeEvent = CustomEvent<{
 	file: TAbstractFile;
 	changeType: VaultChangeType;
 }>;
+
+export const ASN_PLUGIN_SETTINGS = "AppleStyleNotesPluging-Settings";

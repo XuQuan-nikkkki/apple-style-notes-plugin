@@ -2,8 +2,9 @@ import { Plugin, TAbstractFile } from "obsidian";
 
 import { FileTreeView } from "./FileTreeView";
 import { SettingTab } from "./SettingTab";
-import { AppleStyleNotesPluginSettings, DEFAULT_SETTINGS } from "./settings";
+import { AppleStyleNotesPluginSettings } from "./settings";
 import { VaultChangeEventName, VaultChangeType } from "./assets/constants";
+import { getSettingsFromLocalStorage } from "./utils";
 
 export default class AppleStyleNotesPlugin extends Plugin {
 	settings: AppleStyleNotesPluginSettings;
@@ -92,11 +93,8 @@ export default class AppleStyleNotesPlugin extends Plugin {
 	};
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+		const settings = getSettingsFromLocalStorage();
+		this.settings = Object.assign({}, settings, await this.loadData());
 	}
 
 	async saveSettings() {

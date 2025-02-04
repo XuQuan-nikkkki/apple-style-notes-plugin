@@ -30,7 +30,7 @@ const Folder = ({
 		changeExpandedFolderPaths,
 		createNewFolder,
 		createFile,
-		folders
+		folders,
 	} = useFileTreeStore(
 		useShallow((store: FileTreeStore) => ({
 			getFilesCountInFolder: store.getFilesCountInFolder,
