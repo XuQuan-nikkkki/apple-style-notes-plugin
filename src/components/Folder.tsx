@@ -64,13 +64,6 @@ const Folder = ({
 		}
 	};
 
-	const onClickToExpandFolder = (
-		e: React.MouseEvent<HTMLElement, MouseEvent>
-	) => {
-		e.stopPropagation();
-		onToggleExpandState();
-	};
-
 	const onSaveNewName = async () => {
 		try {
 			const newPath = folder.path.replace(folder.name, name);
@@ -206,7 +199,12 @@ const Folder = ({
 				className="asn-folder-pane-left-sectionn"
 				onClick={(e) => {
 					if (expandFolderByClickingOnElement == "folder") {
-						onClickToExpandFolder(e);
+						e.stopPropagation();
+						if (focusedFolder?.path !== folder.path) {
+							setFocusedFolder(folder);
+						} else {
+							onToggleExpandState();
+						}
 					}
 				}}
 			>
@@ -214,7 +212,8 @@ const Folder = ({
 					className="asn-folder-arrow-icon-wrapper"
 					onClick={(e) => {
 						if (expandFolderByClickingOnElement == "icon") {
-							onClickToExpandFolder(e);
+							e.stopPropagation();
+							onToggleExpandState();
 						}
 					}}
 				>
