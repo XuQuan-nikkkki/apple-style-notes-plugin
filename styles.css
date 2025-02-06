@@ -54,17 +54,19 @@ If your plugin does not need CSS, delete this file.
 .asn-plugin-container {
 	display: flex;
 	height: 100%;
-	overflow-y: auto;
+	overflow-y: hidden;
 }
 
 .asn-folder-pane {
 	min-width: var(--asn-folder-pane-min-width);
 	margin-right: 8px;
+	overflow-y: auto;
 }
 
 .asn-files-pane {
 	min-width: var(--asn-files-pane-min-width);
 	flex: 1;
+	overflow-y: auto;
 }
 
 .asn-pane-divider {
