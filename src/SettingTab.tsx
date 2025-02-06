@@ -11,6 +11,11 @@ export class SettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
+	async saveSettings() {
+		await this.plugin.saveSettings();
+		saveSettingsToLocalStorage(this.plugin.settings);
+	}
+
 	display(): void {
 		const { containerEl } = this;
 
@@ -27,8 +32,21 @@ export class SettingTab extends PluginSettingTab {
 				cb.setValue(this.plugin.settings.expandFolderByClickingOn);
 				cb.onChange(async (val: expandFolderByClickingOnElement) => {
 					this.plugin.settings.expandFolderByClickingOn = val;
-					await this.plugin.saveSettings();
-					saveSettingsToLocalStorage(this.plugin.settings);
+					await this.saveSettings();
+				});
+			});
+
+		new Setting(containerEl)
+			.setName("Include Subfolder Files Count")
+			.setDesc(
+				"When enabled, the file count will include files inside subfolders. Otherwise, only direct child files are counted."
+			)
+			.addToggle((cb) => {
+				cb.setValue(this.plugin.settings.includeSubfolderFilesCount);
+				cb.onChange(async (val) => {
+					this.plugin.settings.includeSubfolderFilesCount = val;
+					await this.saveSettings();
+					console.log(this.plugin.settings.includeSubfolderFilesCount)
 				});
 			});
 	}

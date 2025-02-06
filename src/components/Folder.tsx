@@ -53,6 +53,8 @@ const Folder = ({
 	const isFolderExpanded = expandedFolderPaths.includes(folder.path);
 	const expandFolderByClickingOnElement =
 		plugin.settings.expandFolderByClickingOn;
+	const includeSubfolderFilesCount =
+		plugin.settings.includeSubfolderFilesCount;
 
 	const onToggleExpandState = (): void => {
 		if (isRoot) return;
@@ -175,7 +177,10 @@ const Folder = ({
 		menu.showAtPosition({ x: e.clientX, y: e.clientY });
 	};
 
-	const filesCount = getFilesCountInFolder(folder);
+	const filesCount = getFilesCountInFolder(
+		folder,
+		includeSubfolderFilesCount
+	);
 	const isFocused = folder.path == focusedFolder?.path;
 	const isExpanded = isRoot || expandedFolderPaths.includes(folder.path);
 

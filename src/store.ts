@@ -38,7 +38,10 @@ export type FileTreeStore = {
 	// Folders related
 	findFolderByPath: (name: string) => TFolder | undefined;
 	getTopLevelFolders: () => TFolder[];
-	getFilesCountInFolder: (folder: TFolder) => number;
+	getFilesCountInFolder: (
+		folder: TFolder,
+		includeSubfolderFilesCount: boolean
+	) => number;
 	getFoldersByParent: (parentFolder: TFolder) => TFolder[];
 	getDirectFilesInFolder: (folder: TFolder) => TFile[];
 	hasFolderChildren: (folder: TFolder) => boolean;
@@ -47,7 +50,11 @@ export type FileTreeStore = {
 	_createFolder: (path: string) => Promise<TFolder>;
 	createNewFolder: (parentFolder: TFolder) => Promise<TFolder | undefined>;
 	setFocusedFolderAndSaveInLocalStorage: (folder: TFolder) => void;
-	sortFolders: (folders: TFolder[], rule: FolderSortRule) => TFolder[];
+	sortFolders: (
+		folders: TFolder[],
+		rule: FolderSortRule,
+		includeSubfolderFilesCount: boolean
+	) => TFolder[];
 	changeFolderSortRule: (rule: FolderSortRule) => void;
 	restoreFolderSortRule: () => void;
 	changeExpandedFolderPaths: (folderNames: string[]) => void;
@@ -91,14 +98,17 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 		hasFolderChildren: (folder: TFolder): boolean => {
 			return folder.children.some((child) => isFolder(child));
 		},
-		getFilesCountInFolder: (folder: TFolder): number => {
+		getFilesCountInFolder: (
+			folder: TFolder,
+			includeSubfolderFilesCount: boolean
+		): number => {
 			const getFilesCount = (folder: TFolder): number => {
 				if (!folder || !folder.children) return 0;
 				return folder.children.reduce((total, child) => {
 					if (isFile(child)) {
 						return total + 1;
 					}
-					if (isFolder(child)) {
+					if (includeSubfolderFilesCount && isFolder(child)) {
 						return total + getFilesCount(child as TFolder);
 					}
 					return total;
@@ -163,7 +173,11 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			);
 			return newFolder;
 		},
-		sortFolders: (folders: TFolder[], rule: FolderSortRule): TFolder[] => {
+		sortFolders: (
+			folders: TFolder[],
+			rule: FolderSortRule,
+			includeSubfolderFilesCount: boolean
+		): TFolder[] => {
 			if (rule === "FolderNameAscending") {
 				return folders.sort((a, b) => a.name.localeCompare(b.name));
 			} else if (rule === "FolderNameDescending") {
@@ -171,14 +185,26 @@ export const createFileTreeStore = (plugin: AppleStyleNotesPlugin) =>
 			} else if (rule === "FilesCountAscending") {
 				return folders.sort(
 					(a, b) =>
-						get().getFilesCountInFolder(a) -
-						get().getFilesCountInFolder(b)
+						get().getFilesCountInFolder(
+							a,
+							includeSubfolderFilesCount
+						) -
+						get().getFilesCountInFolder(
+							b,
+							includeSubfolderFilesCount
+						)
 				);
 			} else if (rule === "FilesCountDescending") {
 				return folders.sort(
 					(a, b) =>
-						get().getFilesCountInFolder(b) -
-						get().getFilesCountInFolder(a)
+						get().getFilesCountInFolder(
+							b,
+							includeSubfolderFilesCount
+						) -
+						get().getFilesCountInFolder(
+							a,
+							includeSubfolderFilesCount
+						)
 				);
 			}
 			return folders; // 如果没有匹配的规则，返回原始文件夹

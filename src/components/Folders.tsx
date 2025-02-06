@@ -92,7 +92,11 @@ const Folders = ({ useFileTreeStore, plugin }: Props) => {
 	};
 
 	const renderFolders = (folders: TFolder[]) => {
-		const sortedFolders = sortFolders(folders, folderSortRule);
+		const sortedFolders = sortFolders(
+			folders,
+			folderSortRule,
+			plugin.settings.includeSubfolderFilesCount
+		);
 		return sortedFolders.map((folder) => (
 			<div key={folder.name}>
 				<Folder
